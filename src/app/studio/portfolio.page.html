@@ -1,0 +1,97 @@
+<div class="page-intro">
+  <div class="wrap">
+    <nav class="breadcrumbs" aria-label="Ваш шлях">
+      <a routerLink="/">Головна</a>
+      @if (category()) { <a routerLink="/roboty">Наші роботи</a> }
+      <span aria-current="page">{{ heading() }}</span>
+    </nav>
+    <h1>{{ heading() }}</h1>
+    @if (valid()) {
+      <p class="lead">{{ selected()?.description ?? 'Святкове освітлення для будинків, бізнесу й відкритих просторів.' }}</p>
+    }
+  </div>
+</div>
+
+<section class="wrap page-space">
+  @if (valid()) {
+    <nav class="variants gallery-nav" aria-label="Категорії робіт">
+      <a class="variant-button" routerLink="/roboty" [attr.aria-current]="category() ? null : 'page'">Усі роботи</a>
+      @for (gallery of galleries; track gallery.id) {
+        <a class="variant-button" [routerLink]="['/roboty', gallery.id]" [attr.aria-current]="gallery.id === category() ? 'page' : null">
+          {{ gallery.title }}
+        </a>
+      }
+    </nav>
+    <div class="project-grid">
+      @for (entry of entries(); track entry.work.id) {
+        @let work = entry.work;
+        @let media = work.media;
+        <article class="project-card" [id]="work.id">
+          <button type="button" class="project-zoom project-image beveled"
+            [attr.aria-label]="(media.kind === 'video' ? 'Відкрити відео: ' : 'Збільшити фото: ') + work.title"
+            (click)="open($index)">
+            <img [src]="media.preview.src" [alt]="media.preview.alt" [width]="media.preview.width" [height]="media.preview.height"
+              [loading]="$index < 3 ? 'eager' : 'lazy'" decoding="async">
+            @if (media.kind === 'video') { <span class="video-label" aria-hidden="true"><gy-icon name="play"/> Відео</span> }
+          </button>
+          <div class="gallery-caption">
+            @if (!category()) { <p>{{ entry.galleryTitle }}</p> }
+            <h2>{{ work.title }}</h2>
+            @if (work.location) { <p>{{ work.location }}</p> }
+            <p>{{ work.detail }}</p>
+          </div>
+        </article>
+      }
+    </div>
+
+    <dialog #gallery class="gallery-dialog" aria-labelledby="gallery-title" (close)="viewedIndex.set(null)"
+      (keydown.arrowleft)="keyboardStep($event, -1)" (keydown.arrowright)="keyboardStep($event, 1)">
+      <div class="dialog-title">
+        <h2 id="gallery-title">{{ viewed()?.title }}</h2>
+        <form method="dialog"><button type="submit" class="variant-button" autofocus>Закрити</button></form>
+      </div>
+      @if (viewed(); as work) {
+        @let media = work.media;
+        <figure class="gallery-media">
+          @if (media.kind === 'video') {
+            <video controls playsinline preload="metadata" [poster]="media.preview.src" [src]="media.src"
+              [attr.aria-label]="'Відео: ' + work.title" width="960" height="540">
+              @if (media.captions; as track) { <track kind="captions" srclang="uk" label="Українська" [src]="track"> }
+              <a [href]="media.src">Відкрити відеофайл</a>
+            </video>
+          } @else {
+            <img [src]="media.preview.src" [alt]="media.preview.alt" [width]="media.preview.width" [height]="media.preview.height">
+          }
+          <figcaption>
+            @if (work.location) { <p>{{ work.location }}</p> }
+            <p>{{ work.detail }}</p>
+          </figcaption>
+        </figure>
+        @if (entries().length > 1) {
+          <div class="gallery-controls">
+            <button type="button" class="variant-button" (click)="step(-1)">Попереднє</button>
+            <span class="gallery-position" aria-live="polite">{{ (viewedIndex() ?? 0) + 1 }} / {{ entries().length }}</span>
+            <button type="button" class="variant-button" (click)="step(1)">Наступне</button>
+          </div>
+        }
+      }
+    </dialog>
+  } @else {
+    <a class="button primary" routerLink="/roboty">До всіх робіт</a>
+  }
+</section>
+
+@if (comparison(); as comparison) {
+  <section class="sand-section">
+    <div class="wrap section-space">
+      <div class="section-heading">
+        <div>
+          @if (comparison.description) { <p class="eyebrow">До та після</p> }
+          <h2>{{ comparison.title }}</h2>
+        </div>
+        @if (comparison.description) { <p>{{ comparison.description }}</p> }
+      </div>
+      <gy-compare [images]="comparison.images" [class.wide-mobile]="comparison.wideOnMobile"/>
+    </div>
+  </section>
+}

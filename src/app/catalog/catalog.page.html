@@ -1,0 +1,74 @@
+<div class="page-intro">
+  <div class="wrap">
+    <nav class="breadcrumbs" aria-label="Ваш шлях"><a routerLink="/">Головна</a>
+      @if (section()) { <a routerLink="/katalog">Каталог</a> }
+      <span aria-current="page">{{ child()?.name ?? title() }}</span>
+    </nav>
+    <h1>{{ title() }}</h1>
+    @if (child(); as option) { <p class="lead">{{ option.name }}</p> }
+    @else if (valid()) { <p class="lead">Світло для фасаду, саду та інтер’єру.</p> }
+  </div>
+</div>
+
+<section class="wrap page-space catalog-layout">
+  <aside aria-label="Категорії каталогу">
+    <details class="small-category-nav">
+      <summary>Категорії освітлення</summary>
+      <ng-container [ngTemplateOutlet]="tree"/>
+    </details>
+    <div class="large-category-nav"><ng-container [ngTemplateOutlet]="tree"/></div>
+  </aside>
+
+  <ng-template #tree>
+    <nav class="category-nav" aria-label="Категорії">
+      <a routerLink="/katalog" [attr.aria-current]="!category() ? 'page' : null">Усі гірлянди</a>
+      @for (item of categories; track item.id) {
+        <a [routerLink]="['/katalog', item.id]" [attr.aria-current]="section() === item && !child() ? 'page' : null">
+          <img [src]="'/media/' + item.id + '.svg'" width="36" height="36" alt=""> {{ item.label }}
+        </a>
+        @if (section() === item) {
+          @for (option of item.children; track option.id) {
+            <a class="subcat" [routerLink]="['/katalog', item.id, option.id]" [attr.aria-current]="child() === option ? 'page' : null">{{ option.name }}</a>
+          }
+        }
+      }
+    </nav>
+  </ng-template>
+
+  <div>
+    @if (valid()) {
+      <div class="catalog-controls">
+        <label>Пошук <input #query type="search" maxlength="100" [value]="search()" (input)="search.set(query.value)" placeholder="Назва гірлянди"></label>
+        <label><span id="catalog-color-label">Колір світіння</span>
+          <select #color aria-labelledby="catalog-color-label" [value]="glow()" (change)="changeGlow(color.value)">
+            <option value="">Усі кольори</option>
+            @for (option of glowOptions; track option[0]) { <option [value]="option[0]">{{ option[1].label }}</option> }
+          </select>
+        </label>
+        <label><span id="catalog-sort-label">Сортування</span>
+          <select #sort aria-labelledby="catalog-sort-label" [value]="order()" (change)="order.set(sort.value)">
+            <option value="featured">Рекомендовані</option>
+            <option value="name-asc">За назвою, А–Я</option>
+            <option value="name-desc">За назвою, Я–А</option>
+          </select>
+        </label>
+      </div>
+      <p class="catalog-status" role="status">Знайдено моделей: {{ products().length }}</p>
+      @if (products().length) {
+        <div class="product-grid catalog-grid">
+          @for (product of products(); track product.slug) {
+            <gy-product-card [product]="product" [initialGlow]="selectedGlow()" [priority]="$first"/>
+          }
+        </div>
+      } @else {
+        <div class="empty-state">
+          <h2>{{ search() || glow() ? 'Немає збігів' : 'Тут ще немає моделей' }}</h2>
+          @if (search() || glow()) { <button type="button" class="button primary" (click)="resetFilters()">Скинути фільтри</button> }
+          @else { <a class="button primary" routerLink="/katalog">Усі гірлянди</a> }
+        </div>
+      }
+    } @else {
+      <a class="button primary" routerLink="/katalog">До каталогу</a>
+    }
+  </div>
+</section>

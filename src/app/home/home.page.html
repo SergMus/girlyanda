@@ -1,0 +1,99 @@
+<section class="hero" aria-labelledby="hero-title">
+  <picture class="hero-poster">
+    <source media="(max-width: 650px)" srcset="/media/hero-mobile.webp">
+    <img src="/media/hero.webp" srcset="/media/hero-small.webp 1000w, /media/hero.webp 1600w" sizes="100vw" width="1600" height="900" fetchpriority="high" alt="">
+  </picture>
+  <video #video class="hero-video" [class.visible]="playing()" muted loop playsinline preload="none" aria-hidden="true"
+    (playing)="playing.set(true)" (pause)="playing.set(false)" (error)="playing.set(false)"></video>
+  <div class="hero-shade"></div>
+  <div class="wrap hero-inner">
+    <div class="hero-copy">
+      <p class="eyebrow hero-eyebrow"><span></span> Студія святкового освітлення</p>
+      <h1 id="hero-title">Світло, що створює<br><em>атмосферу.</em></h1>
+      <p class="hero-description">Гірлянди для дому й бізнесу. Проєктування та професійний монтаж святкової ілюмінації.</p>
+      <div class="button-row">
+        <a class="button gold" routerLink="/katalog">До каталогу</a>
+        <a class="button outline-light" routerLink="/montazh">Замовити монтаж</a>
+      </div>
+    </div>
+    <div class="hero-bottom">
+      <button class="video-toggle" type="button" (click)="toggleVideo()" [attr.aria-label]="playing() ? 'Призупинити відео' : 'Відтворити відео'" [title]="playing() ? 'Призупинити відео' : 'Відтворити відео'">
+        <gy-icon [name]="playing() ? 'pause' : 'play'"/>
+      </button>
+    </div>
+  </div>
+</section>
+
+<section class="categories-section" aria-labelledby="categories-title">
+  <div class="wrap">
+    <div class="categories-heading">
+      <h2 id="categories-title">Категорії освітлення</h2>
+      <a class="text-link" routerLink="/katalog">Увесь каталог</a>
+    </div>
+    <div class="category-grid">
+      @for (category of categories; track category.id) {
+        <a [routerLink]="['/katalog', category.id]">
+          <img [src]="'/media/' + category.id + '.svg'" width="62" height="62" alt="">
+          <span>{{ category.label }}</span>
+        </a>
+      }
+    </div>
+  </div>
+</section>
+
+<section class="wrap section-space studio-split">
+  <div class="studio-photo beveled">
+    <img src="/media/color-alley.webp"
+      srcset="/media/color-alley-small.webp 720w, /media/color-alley.webp 1440w"
+      sizes="(min-width: 1408px) 643px, (min-width: 720px) 45vw, (min-width: 680px) calc(100vw - 4rem), calc(100vw - 2.5rem)"
+      width="1440" height="1080" loading="lazy" decoding="async"
+      alt="Вечірня садова алея з п’ятьма деревами, обвитими білими, тепло-білими, зеленими, синіми та червоними гірляндами">
+  </div>
+  <div>
+    <p class="eyebrow">Професійний монтаж</p>
+    <h2>Святкове світло<br>під ключ</h2>
+    <p class="lead">Оформлюємо фасади, тераси й комерційні простори. Починаємо з особливостей вашого об’єкта й показуємо, як виглядатиме світло, ще до монтажу.</p>
+    <a class="button primary" routerLink="/montazh">Дізнатися про монтаж</a>
+  </div>
+</section>
+
+<section class="compare-section">
+  <div class="wrap section-space">
+    <div class="section-heading">
+      <div><p class="eyebrow">До та після</p><h2>Як світло змінює фасад</h2></div>
+      <p>Пересуньте повзунок, щоб порівняти фасад до та після монтажу гірлянд.</p>
+    </div>
+    <gy-compare/>
+  </div>
+</section>
+
+<section class="wrap section-space">
+  <div class="section-heading">
+    <h2>Ідеї для вашого простору</h2>
+    <a class="text-link" routerLink="/roboty">Переглянути портфоліо</a>
+  </div>
+  <div class="project-grid">
+    @for (gallery of portfolioGalleries; track gallery.id) {
+      <a class="project-card" [routerLink]="['/roboty', gallery.id]">
+        <div class="project-image beveled">
+          <img [src]="gallery.cover.src" [alt]="gallery.cover.alt" [width]="gallery.cover.width" [height]="gallery.cover.height"
+            loading="lazy" decoding="async">
+        </div>
+        <h3>{{ gallery.title }}</h3>
+        <p>{{ gallery.description }}</p>
+      </a>
+    }
+  </div>
+</section>
+
+<section class="products-section">
+  <div class="wrap section-space">
+    <div class="section-heading">
+      <h2>Вибране з каталогу</h2>
+      <a class="text-link" routerLink="/katalog">Дивитися всі гірлянди</a>
+    </div>
+    <div class="product-grid">
+      @for (item of featured(); track item.slug) { <gy-product-card [product]="item"/> }
+    </div>
+  </div>
+</section>

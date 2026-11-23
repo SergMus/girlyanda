@@ -1,0 +1,8 @@
+/node_modules
+/dist
+/.angular
+/.idea
+/playwright-report
+/test-results
+/.env
+.DS_Store
