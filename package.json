@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "ng serve --host 127.0.0.1",
+    "start": "node server/dev.mjs",
     "build": "ng build",
     "serve:mail": "node --env-file-if-exists=.env server/index.mjs",
     "test": "vitest run tests/catalog.test.ts",

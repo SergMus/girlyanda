@@ -1,6 +1,6 @@
 import { Component, DestroyRef, inject, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { field, SubmissionGateway } from '../orders/submission.gateway';
+import { field, InstallationSubmissionError, SubmissionGateway } from '../orders/submission.gateway';
 import { IconComponent } from '../shared/icons.component';
 
 const allowed = ['image/jpeg', 'image/png', 'image/webp'];
@@ -238,7 +238,7 @@ export class InstallationRequestPage {
       this.receipt.set(await this.gateway.sendInstallation({name, phone, objectType, description, photo: this.photo()}));
       this.clearPhoto();
       form.reset();
-    } catch {
+    } catch (error) {
       const body = [
         'Ім’я: ' + name,
         'Телефон: ' + phone,
@@ -247,7 +247,9 @@ export class InstallationRequestPage {
         description,
       ].join('\r\n');
       this.emailDraft.set('mailto:umt1@ukr.net?subject=' + encodeURIComponent('Заявка на монтаж Girlyanda') + '&body=' + encodeURIComponent(body));
-      this.error.set('Надіслати заявку не вдалося. Спробуйте ще раз або надішліть її поштою.');
+      this.error.set(error instanceof InstallationSubmissionError && error.status === 503
+        ? 'Надсилання через форму тимчасово недоступне. Скористайтеся підготовленим листом.'
+        : 'Надіслати заявку не вдалося. Спробуйте ще раз або надішліть її поштою.');
     } finally {
       this.busy.set(false);
     }

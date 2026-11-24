@@ -9,6 +9,12 @@ export interface InstallationRequest {
   readonly photo: File | null;
 }
 
+export class InstallationSubmissionError extends Error {
+  constructor(readonly status: number) {
+    super('Installation request failed');
+  }
+}
+
 export interface OrderRequest {
   readonly name: string;
   readonly phone: string;
@@ -28,7 +34,7 @@ export class SubmissionGateway {
     if (photo) body.set('photo', photo);
 
     const response = await fetch('/api/installation', {method: 'POST', body, signal: AbortSignal.timeout(35_000)});
-    if (!response.ok) throw new Error('Installation request failed');
+    if (!response.ok) throw new InstallationSubmissionError(response.status);
     const {id} = await response.json() as {id?: unknown};
     if (typeof id !== 'string' || !/^[A-F0-9]{8}$/.test(id)) throw new Error('Invalid installation receipt');
     return id;

@@ -238,6 +238,11 @@ test('окрема заявка на монтаж додає підказки й
   await expect(description).toHaveValue(textWithColor);
   await expect(page.getByRole('img', {name: 'Попередній перегляд фото об’єкта'})).toBeVisible();
 
+  await page.route('**/api/installation', route => route.fulfill({status: 503}), {times: 1});
+  await submit.click();
+  await expect(page.getByRole('alert')).toHaveText('Надсилання через форму тимчасово недоступне. Скористайтеся підготовленим листом.');
+  await expect(page.getByRole('link', {name: 'Відкрити підготовлений лист'})).toBeVisible();
+
   await page.route('**/api/installation', route => route.fulfill({status: 201, json: {id: 'ABCDEF01'}}));
   const [request] = await Promise.all([
     page.waitForRequest(request => request.url().endsWith('/api/installation') && request.method() === 'POST'),

@@ -7,7 +7,7 @@ export default defineConfig({
   testMatch: '**/*.e2e.ts',
   use: {baseURL},
   webServer: {
-    command: 'npm run start -- --port 4210',
+    command: 'node node_modules/@angular/cli/bin/ng.js serve --host 127.0.0.1 --port 4210',
     url: baseURL,
     reuseExistingServer: !process.env['CI'],
     timeout: 30_000,
