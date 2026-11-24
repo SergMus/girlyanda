@@ -5,7 +5,6 @@ import { categories } from '../catalog/categories';
 import { ProductCardComponent } from '../catalog/product-card.component';
 import { CompareComponent } from '../shared/compare.component';
 import { IconComponent } from '../shared/icons.component';
-import { portfolioGalleries } from '../studio/projects';
 
 @Component({
   imports: [RouterLink, ProductCardComponent, CompareComponent, IconComponent],
@@ -18,7 +17,34 @@ export class HomePage {
   private autoplay = false;
   readonly playing = signal(false);
   readonly categories = categories;
-  readonly portfolioGalleries = portfolioGalleries;
+  readonly ideaPhotos = [
+    {
+      category: 'zamiski-budynky',
+      title: 'Заміські будинки',
+      detail: 'Святкове освітлення дахів, фасадів і входів приватних будинків.',
+      src: '/media/modern-country-house.webp',
+      width: 2270,
+      height: 1254,
+      crop: 'screenshot',
+    },
+    {
+      category: 'komertsiini-obiekty',
+      title: 'Комерційні об’єкти',
+      detail: 'Світлове оформлення фасадів і вітрин магазинів, кафе та готелів.',
+      src: '/media/cafe.webp',
+      width: 1200,
+      height: 600,
+    },
+    {
+      category: 'prostory-dereva-yalynky',
+      title: 'Простори, дерева, ялинки',
+      detail: 'Гірлянди для терас і садових доріжок, підсвічування дерев і ялинок.',
+      src: '/media/illuminated-city-square.webp',
+      width: 1200,
+      height: 1112,
+      crop: 'city-square',
+    },
+  ];
   private readonly catalog = inject(CatalogRepository);
   readonly featured = computed(() => this.catalog.products().filter(item => item.featured));
 

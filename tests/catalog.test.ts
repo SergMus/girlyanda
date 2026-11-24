@@ -57,11 +57,13 @@ describe('Підбір варіанта товару', () => {
 });
 
 describe('Стартовий асортимент', () => {
-  it('показує предметні фото бахроми 150 LED для обох режимів світіння', () => {
+  it('показує предметні фото й дерев’яний карниз для кожної комплектації бахроми 150 LED', () => {
     const flashing = assortment.find(product => product.slug === 'bakhroma-150-merekhtinnia')!;
     for (const variant of [...icicle.variants, ...flashing.variants]) {
       const photos = variant.gallery.map(photo => photo.file);
       expect(photos.length).toBeGreaterThan(0);
+      const eaves = photos[0].replace(/\.webp$/, '-wood-eaves.webp');
+      expect(photos.filter(file => file.endsWith('-wood-eaves.webp'))).toEqual([eaves]);
       expect(photos.filter(file => /-house(?:-far)?\.webp$/.test(file))).toEqual([]);
       expect(photos.filter(file => !existsSync(new URL('../public' + file, import.meta.url)))).toEqual([]);
     }

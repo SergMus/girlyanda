@@ -67,20 +67,19 @@
   </div>
 </section>
 
-<section class="wrap section-space">
+<section id="ideyi" class="wrap section-space" aria-labelledby="ideas-title">
   <div class="section-heading">
-    <h2>Ідеї для вашого простору</h2>
+    <h2 id="ideas-title">Ідеї для вашого простору</h2>
     <a class="text-link" routerLink="/roboty">Переглянути портфоліо</a>
   </div>
-  <div class="project-grid">
-    @for (gallery of portfolioGalleries; track gallery.id) {
-      <a class="project-card" [routerLink]="['/roboty', gallery.id]">
-        <div class="project-image beveled">
-          <img [src]="gallery.cover.src" [alt]="gallery.cover.alt" [width]="gallery.cover.width" [height]="gallery.cover.height"
-            loading="lazy" decoding="async">
+  <div class="project-grid idea-photos">
+    @for (photo of ideaPhotos; track photo.category) {
+      <a class="project-card" [routerLink]="['/roboty', photo.category]">
+        <div class="project-image beveled" [class]="photo.crop ?? ''">
+          <img [src]="photo.src" [width]="photo.width" [height]="photo.height" alt="" loading="lazy" decoding="async">
         </div>
-        <h3>{{ gallery.title }}</h3>
-        <p>{{ gallery.description }}</p>
+        <h3>{{ photo.title }}</h3>
+        <p>{{ photo.detail }}</p>
       </a>
     }
   </div>

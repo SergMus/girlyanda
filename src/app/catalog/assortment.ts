@@ -96,7 +96,8 @@ function icicleVariant(glow: keyof typeof icicleColors, wire: Wire, flashing: bo
   ] : [{...photo, note: 'Ілюстрація кольору світіння.'}];
   const prefix = flashing ? 'GY-B150-F' : 'GY-B150';
   const wireCode = wire === 'white' ? 'WH' : 'BK';
-  return variant(prefix + '-' + hue + '-' + wireCode, glow, wire, icicleSize, ...gallery, ...connectorPhotos(wire));
+  const eaves = media(modeFile + '-wood-eaves', 'Бахрома на дерев’яному карнизі вночі. ' + modeAlt + '.', 'variant');
+  return variant(prefix + '-' + hue + '-' + wireCode, glow, wire, icicleSize, ...gallery, eaves, ...connectorPhotos(wire));
 }
 
 function icicleVariants(flashing: boolean): Product['variants'] {

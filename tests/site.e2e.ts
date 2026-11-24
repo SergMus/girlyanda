@@ -165,48 +165,71 @@ test('окрема заявка на монтаж додає підказки й
 
 test('галерея робіт дозволяє збільшити фото та перегорнути його', async ({page}) => {
   await page.goto('/roboty');
-  await page.getByRole('button', {name: 'Збільшити фото: Заміський будинок'}).click();
+  await page.getByRole('button', {name: 'Збільшити фото: Будинок із білими гірляндами'}).click();
   const dialog = page.getByRole('dialog');
-  await expect(dialog.getByRole('heading')).toHaveText('Заміський будинок');
+  await expect(dialog.getByRole('heading')).toHaveText('Будинок із білими гірляндами');
   await dialog.getByRole('button', {name: 'Наступне', exact: true}).click();
-  await expect(dialog.getByRole('heading')).toHaveText('Будинок із кам’яним фасадом');
+  await expect(dialog.getByRole('heading')).toHaveText('Білі гірлянди на даху й хвойних деревах');
   await dialog.getByRole('button', {name: 'Закрити'}).click();
   await expect(dialog).not.toBeVisible();
 });
 
-test('картки на головній відкривають окремі галереї з фото та відео', async ({page}) => {
+test('ідеї на головній показують фото, а картки ведуть до фотогалерей', async ({page}) => {
   const categories = [
-    {title: 'Заміські будинки', slug: 'zamiski-budynky', photo: 'Заміський будинок', video: 'Фасад і вхід у вечірньому світлі', source: '/media/hero.webm'},
-    {title: 'Комерційні об’єкти', slug: 'komertsiini-obiekty', photo: 'Вхід до готелю', video: 'Вітрина кафе у сутінках', source: '/media/portfolio-cafe.webm'},
-    {title: 'Простори, дерева й ялинки', slug: 'prostory-dereva-yalynky', photo: 'Святкова ялинка в саду', video: 'Тераса в саду', source: '/media/portfolio-terrace.webm'},
+    {
+      title: 'Заміські будинки', slug: 'zamiski-budynky',
+      photo: 'Будинок із білими гірляндами', photoCount: 6,
+      idea: 'Заміські будинки', source: '/media/modern-country-house.webp',
+      detail: 'Святкове освітлення дахів, фасадів і входів приватних будинків.',
+    },
+    {
+      title: 'Комерційні об’єкти', slug: 'komertsiini-obiekty',
+      photo: 'Фасад Hotel Time', photoCount: 14,
+      idea: 'Комерційні об’єкти', source: '/media/cafe.webp',
+      detail: 'Світлове оформлення фасадів і вітрин магазинів, кафе та готелів.',
+    },
+    {
+      title: 'Простори, дерева й ялинки', slug: 'prostory-dereva-yalynky',
+      photo: 'Ялинка біля дерев’яного будиночка', photoCount: 6,
+      idea: 'Простори, дерева, ялинки', source: '/media/illuminated-city-square.webp',
+      detail: 'Гірлянди для терас і садових доріжок, підсвічування дерев і ялинок.',
+    },
   ];
 
+  const ideas = page.getByRole('region', {name: 'Ідеї для вашого простору'});
   for (const category of categories) {
     await page.goto('/');
-    await page.locator('a.project-card').filter({hasText: category.title}).click();
+    await expect(ideas.locator('video')).toHaveCount(0);
+    await expect(ideas.locator('img')).toHaveCount(categories.length);
+    const card = ideas.getByRole('link').filter({has: page.getByRole('heading', {name: category.idea, exact: true})});
+    const photo = card.locator('img');
+    await expect(card.getByText(category.detail, {exact: true})).toBeVisible();
+    await expect(photo).toHaveAttribute('src', category.source);
+    await photo.scrollIntoViewIfNeeded();
+    await photo.evaluate((image: HTMLImageElement) => image.decode());
+    await card.click();
     await expect(page).toHaveURL('/roboty/' + category.slug);
     await expect(page.getByRole('heading', {level: 1, name: category.title})).toBeVisible();
-    await expect(page.locator('.project-grid article')).toHaveCount(3);
+    const photos = page.locator('.project-grid img[src^="/media/works/"]');
+    await expect(photos).toHaveCount(category.photoCount);
+    const imagesMatchDimensions = await photos.evaluateAll(async images => Promise.all(images.map(async image => {
+      const photo = image as HTMLImageElement;
+      photo.loading = 'eager';
+      await photo.decode();
+      return photo.naturalWidth === Number(photo.getAttribute('width'))
+        && photo.naturalHeight === Number(photo.getAttribute('height'));
+    })));
+    expect(imagesMatchDimensions).toEqual(Array(category.photoCount).fill(true));
+    await expect(page.locator('.project-grid article')).toHaveCount(category.photoCount);
     await expect(page.getByRole('heading', {level: 2, name: category.photo})).toBeVisible();
-    await expect(page.locator('video')).toHaveCount(0);
-
-    await page.getByRole('button', {name: 'Відкрити відео: ' + category.video}).click();
-    const dialog = page.getByRole('dialog');
-    await expect(dialog.getByRole('heading')).toHaveText(category.video);
-    const video = dialog.locator('video');
-    await expect(video).toHaveAttribute('src', category.source);
-    await expect(video).toHaveAttribute('controls', '');
-    await video.evaluate(async element => {
-      const player = element as HTMLVideoElement;
-      player.muted = true;
-      await player.play();
-    });
-    await expect.poll(() => video.evaluate(element => (element as HTMLVideoElement).currentTime)).toBeGreaterThan(0);
-    await dialog.getByRole('button', {name: 'Закрити'}).click();
-    await expect(dialog).not.toBeVisible();
     await expect(page.locator('video')).toHaveCount(0);
   }
   await page.getByRole('navigation', {name: 'Категорії робіт'}).getByRole('link', {name: 'Комерційні об’єкти'}).click();
   await expect(page.getByRole('heading', {level: 1, name: 'Комерційні об’єкти'})).toBeVisible();
-  await expect(page.getByRole('heading', {level: 2, name: 'Вхід до готелю'})).toBeVisible();
+  await expect(page.getByRole('heading', {level: 2, name: 'Фасад Hotel Time'})).toBeVisible();
+  await page.getByRole('link', {name: 'Усі роботи', exact: true}).click();
+  await expect(page).toHaveURL('/roboty');
+  await expect(page.locator('.project-grid article'))
+    .toHaveCount(categories.reduce((total, category) => total + category.photoCount, 0));
+  await expect(page.locator('video')).toHaveCount(0);
 });

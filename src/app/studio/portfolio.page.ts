@@ -2,7 +2,6 @@ import { Component, computed, effect, ElementRef, inject, input, signal, viewChi
 import { Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { CompareComponent, houseImages } from '../shared/compare.component';
-import { IconComponent } from '../shared/icons.component';
 import { portfolioGalleries } from './projects';
 
 const shoppingCenterComparison = {
@@ -26,7 +25,7 @@ const houseComparison = {
 };
 
 @Component({
-  imports: [RouterLink, CompareComponent, IconComponent],
+  imports: [RouterLink, CompareComponent],
   templateUrl: './portfolio.page.html',
   styleUrl: './portfolio.page.scss',
 })
@@ -83,7 +82,6 @@ export class PortfolioPage {
   }
 
   keyboardStep(event: Event, offset: number): void {
-    if (event.target instanceof HTMLVideoElement) return;
     event.preventDefault();
     this.step(offset);
   }

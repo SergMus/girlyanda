@@ -25,14 +25,14 @@
     <div class="project-grid">
       @for (entry of entries(); track entry.work.id) {
         @let work = entry.work;
-        @let media = work.media;
+        @let image = work.image;
         <article class="project-card" [id]="work.id">
           <button type="button" class="project-zoom project-image beveled"
-            [attr.aria-label]="(media.kind === 'video' ? 'Відкрити відео: ' : 'Збільшити фото: ') + work.title"
+            [attr.aria-label]="'Збільшити фото: ' + work.title"
             (click)="open($index)">
-            <img [src]="media.preview.src" [alt]="media.preview.alt" [width]="media.preview.width" [height]="media.preview.height"
+            <img [src]="image.src" [alt]="image.alt" [width]="image.width" [height]="image.height"
+              [class.portrait]="image.height > image.width"
               [loading]="$index < 3 ? 'eager' : 'lazy'" decoding="async">
-            @if (media.kind === 'video') { <span class="video-label" aria-hidden="true"><gy-icon name="play"/> Відео</span> }
           </button>
           <div class="gallery-caption">
             @if (!category()) { <p>{{ entry.galleryTitle }}</p> }
@@ -51,17 +51,9 @@
         <form method="dialog"><button type="submit" class="variant-button" autofocus>Закрити</button></form>
       </div>
       @if (viewed(); as work) {
-        @let media = work.media;
+        @let image = work.image;
         <figure class="gallery-media">
-          @if (media.kind === 'video') {
-            <video controls playsinline preload="metadata" [poster]="media.preview.src" [src]="media.src"
-              [attr.aria-label]="'Відео: ' + work.title" width="960" height="540">
-              @if (media.captions; as track) { <track kind="captions" srclang="uk" label="Українська" [src]="track"> }
-              <a [href]="media.src">Відкрити відеофайл</a>
-            </video>
-          } @else {
-            <img [src]="media.preview.src" [alt]="media.preview.alt" [width]="media.preview.width" [height]="media.preview.height">
-          }
+          <img [src]="image.src" [alt]="image.alt" [width]="image.width" [height]="image.height">
           <figcaption>
             @if (work.location) { <p>{{ work.location }}</p> }
             <p>{{ work.detail }}</p>

@@ -46,3 +46,8 @@
 
 .project-card h3 { margin-top: .7rem; }
 .project-card p { margin-top: .3rem; }
+.idea-photos .project-image img { aspect-ratio: 16 / 9; }
+.idea-photos :is(.screenshot, .city-square) { aspect-ratio: 16 / 9; }
+/* Keep the screenshot controls outside the visible photo. */
+.idea-photos .screenshot img { width: 106%; max-width: none; aspect-ratio: auto; }
+.idea-photos .city-square img { width: 102.1%; max-width: none; height: 100%; margin-left: -2.1%; object-position: center 53%; }
