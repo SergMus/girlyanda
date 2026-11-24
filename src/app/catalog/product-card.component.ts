@@ -18,17 +18,17 @@ import { Glow, glowOptions, priceLabel, Product, selectVariant } from './product
         }
       </a>
       <div class="card-body">
+        <p class="card-price" aria-live="polite">{{ priceLabel(variant().priceKopiykas) }}</p>
         <h3><a [routerLink]="['/tovar', product().slug]" [queryParams]="{sku: variant().sku}">{{ product().name }}</a></h3>
         @if (product().cardSubtitle; as subtitle) { <p class="card-subtitle">{{ subtitle }}</p> }
-        <div class="card-meta">
-          <span>{{ priceLabel(variant().priceKopiykas) }}</span>
-          @if (glows().length > 1) { <div class="swatches" role="group" [attr.aria-label]="'Колір світіння: ' + product().name">
+        @if (glows().length > 1) {
+          <div class="swatches" role="group" [attr.aria-label]="'Колір світіння: ' + product().name">
             @for (glow of glows(); track glow) {
               <button type="button" class="swatch" [style.--swatch]="glowOptions[glow].swatch" [attr.aria-label]="glowOptions[glow].label"
                 [title]="glowOptions[glow].label" [attr.aria-pressed]="variant().glow === glow" (click)="choose(glow)"></button>
             }
-          </div> }
-        </div>
+          </div>
+        }
       </div>
     </article>
   `,

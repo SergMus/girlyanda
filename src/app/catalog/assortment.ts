@@ -1,14 +1,24 @@
 import { Glow, glowOptions, Product, ProductMedia, Variant, Wire } from './products';
 
+type RubberWire = 'white' | 'black';
+
 function media(name: string, alt: string, kind: ProductMedia['kind'] = 'series'): ProductMedia {
   return {file: '/media/products/' + name + '.webp', alt, kind};
 }
 
-function variant(sku: string, glow: Glow | null, wire: Wire | null, size: string, ...gallery: ProductMedia[]): Variant {
-  return {sku, glow, wire, size, gallery, priceKopiykas: null, availability: 'unknown'};
+const uahPerUsd = 45.0811; // NBU rate for 2026-11-24.
+
+function usdToKopiykas(usd: number): number {
+  return Math.round(usd * uahPerUsd * 100);
 }
 
-function connectorPhotos(wire: Wire): readonly ProductMedia[] {
+function variant(
+  sku: string, glow: Glow | null, wire: Wire | null, size: string, priceKopiykas: number, ...gallery: ProductMedia[]
+): Variant {
+  return {sku, glow, wire, size, gallery, priceKopiykas, availability: 'unknown'};
+}
+
+function connectorPhotos(wire: RubberWire): readonly ProductMedia[] {
   const cable = wire === 'white' ? 'білому' : 'чорному';
   const file = 'bakhroma-150-connector-' + wire;
   return [
@@ -22,16 +32,41 @@ const reference = media('led-reference', 'Один світлодіод тепл
 function miniLedVariants(model: string, prefix: string, size: string): Product['variants'] {
   const warm = 'Світлодіод теплого білого кольору на чорному проводі з чорною термоусадкою';
   const white = 'Світлодіод білого кольору на чорному проводі з чорною термоусадкою';
+  const price = usdToKopiykas(54);
   return [
-    variant(prefix + '-WW-BK', 'warm', 'black', size, media(model + '-warm-led', warm, 'variant')),
-    variant(prefix + '-WH-BK', 'white', 'black', size, media(model + '-white-led', white, 'variant')),
-    variant(prefix + '-WW-WH', 'warm', 'white', size, reference),
-    variant(prefix + '-WH-WH', 'white', 'white', size),
+    variant(prefix + '-WW-BK', 'warm', 'black', size, price, media(model + '-warm-led', warm, 'variant')),
+    variant(prefix + '-WH-BK', 'white', 'black', size, price, media(model + '-white-led', white, 'variant')),
+    variant(prefix + '-WW-WH', 'warm', 'white', size, price, reference),
+    variant(prefix + '-WH-WH', 'white', 'white', size, price),
   ];
 }
 
 const icicleWarm = media('kontur-90-warm', 'Гірлянда-бахрома, тепле біле світіння');
 const icicleCool = media('kontur-90-cool', 'Гірлянда-бахрома, холодне біле світіння');
+const snowfallPhoto = media('snowfall-50', 'Фрагмент гірлянди Snowfall з прозорими підвісами 50 см і білими світлодіодами', 'illustration');
+const meteorPhoto = media('meteor-30', 'Фрагмент гірлянди Meteor з прозорими підвісами 30 см і білими світлодіодами', 'illustration');
+function snowfallApplication(image: string, alt: string): ProductMedia {
+  return {
+    file: '/media/works/' + image + '.webp', alt, kind: 'application',
+    note: 'Візуалізація монтажу кількох комплектів. Підвіси в кадрі показано в різних фазах світіння.',
+  };
+}
+
+const snowfallTenMetresOnTrees = snowfallApplication('snowfall-tree', 'Підвіси Snowfall 10 м на гілках великого дерева біля будинку');
+const snowfallThreeMetresOnTree = snowfallApplication('snowfall-tree-courtyard', 'Підвіси Snowfall 3 м на листяному дереві у дворі');
+const meteorOnTree = snowfallApplication('snowfall-tree-evergreen', 'Короткі підвіси Meteor 3 м на хвойному дереві біля кам’яної арки');
+const snowfallSpecifications = [
+  {label: 'Застосування', value: 'Вуличне'},
+  {label: 'Джерело світла', value: 'Світлодіоди (LED)'},
+  {label: 'Кількість підвісів', value: '10 шт.'},
+  {label: 'Напруга', value: '12 В (блок живлення в комплекті)'},
+];
+const longSnowfallSpecifications = [
+  ...snowfallSpecifications,
+  {label: 'Кількість світлодіодів', value: '720 LED'},
+  {label: 'Довжина підвісу', value: '50 см'},
+  {label: 'Контролер', value: 'Так'},
+];
 const curtainWarm = media('zavisa-456-warm', 'Тепло-біла гірлянда-штора на білому проводі', 'variant');
 const galaxyWarm = media('sfera-20-warm', 'Прозора куля з теплим білим світінням');
 const galaxyCool = media('sfera-20-cool', 'Прозора куля з холодним білим світінням');
@@ -82,7 +117,7 @@ const icicleColors = {
   blue: ['BL', 'Синє'],
 } as const;
 
-function icicleVariant(glow: keyof typeof icicleColors, wire: Wire, flashing: boolean): Variant {
+function icicleVariant(glow: keyof typeof icicleColors, wire: RubberWire, flashing: boolean): Variant {
   const [hue, color] = icicleColors[glow];
   const cable = wire === 'white' ? 'білому' : 'чорному';
   const file = 'bakhroma-150-' + glow + '-' + wire;
@@ -97,7 +132,9 @@ function icicleVariant(glow: keyof typeof icicleColors, wire: Wire, flashing: bo
   const prefix = flashing ? 'GY-B150-F' : 'GY-B150';
   const wireCode = wire === 'white' ? 'WH' : 'BK';
   const eaves = media(modeFile + '-wood-eaves', 'Бахрома на дерев’яному карнизі вночі. ' + modeAlt + '.', 'variant');
-  return variant(prefix + '-' + hue + '-' + wireCode, glow, wire, icicleSize, ...gallery, eaves, ...connectorPhotos(wire));
+  // BrightLED's 114 LED model has the same dimensions and is the retail price reference.
+  const price = usdToKopiykas(flashing ? 60 : 54);
+  return variant(prefix + '-' + hue + '-' + wireCode, glow, wire, icicleSize, price, ...gallery, eaves, ...connectorPhotos(wire));
 }
 
 function icicleVariants(flashing: boolean): Product['variants'] {
@@ -166,7 +203,7 @@ const strandColorApplication: ProductMedia = {
   kind: 'application',
 };
 
-function strandVariant({glow, code}: typeof strandGlows[number], wire: Wire, flashing: boolean): Variant {
+function strandVariant({glow, code}: typeof strandGlows[number], wire: RubberWire, flashing: boolean): Variant {
   const cable = wire === 'white' ? 'білому' : 'чорному';
   const label = glowOptions[glow].label;
   const mode = flashing ? '-flash' : '';
@@ -179,7 +216,9 @@ function strandVariant({glow, code}: typeof strandGlows[number], wire: Wire, fla
     : strandApplications[glow] ?? [strandColorApplication];
   const prefix = flashing ? 'GY-P100-F-' : 'GY-P100-';
   const wireCode = wire === 'white' ? 'WH' : 'BK';
-  return variant(prefix + code + '-' + wireCode, glow, wire, strandSize, photo, detail, ...applications, ...connectorPhotos(wire));
+  const price = usdToKopiykas(flashing ? 45 : 42);
+  return variant(prefix + code + '-' + wireCode, glow, wire, strandSize, glow === 'rgb' ? usdToKopiykas(55) : price,
+    photo, detail, ...applications, ...connectorPhotos(wire));
 }
 
 function strandVariants(flashing: boolean): Product['variants'] {
@@ -194,9 +233,9 @@ function strandVariants(flashing: boolean): Product['variants'] {
 const curtainSize = '2 × 1,5 м';
 const curtainDropPitch = {label: 'Крок між вертикальними нитками', value: '8 см'};
 
-type CurtainWirePhotos = Readonly<Record<Wire, ProductMedia>>;
+type CurtainWirePhotos = Readonly<Record<RubberWire, ProductMedia>>;
 
-function curtainWirePhotos(file: string, alt: string, originalWire: Wire, kind: ProductMedia['kind'] = 'series'): CurtainWirePhotos {
+function curtainWirePhotos(file: string, alt: string, originalWire: RubberWire, kind: ProductMedia['kind'] = 'series'): CurtainWirePhotos {
   return {
     white: media(originalWire === 'white' ? file : file + '-white', alt + '. Білий провід', kind),
     black: media(originalWire === 'black' ? file : file + '-black', alt + '. Чорний провід', kind),
@@ -218,7 +257,9 @@ const curtainColors = [
   {glow: 'blue', code: 'BL'},
 ] as const;
 
-function curtainVariants(ledCount: number, size: string, installations: Readonly<Record<'warm' | 'cool', CurtainWirePhotos>>): Product['variants'] {
+function curtainVariants(
+  ledCount: number, size: string, price: number, installations: Readonly<Record<'warm' | 'cool', CurtainWirePhotos>>,
+): Product['variants'] {
   const supportingPhotos: Partial<Record<Glow, readonly CurtainWirePhotos[]>> = {
     warm: [installations.warm],
     cool: [
@@ -227,7 +268,7 @@ function curtainVariants(ledCount: number, size: string, installations: Readonly
       curtainWirePhotos('zavisa-456-cool-leds', 'Крупний план холодно-білих світлодіодів і скручених жил', 'black'),
     ],
   };
-  const makeVariant = (glow: Glow, code: string, wire: Wire): Variant => {
+  const makeVariant = (glow: Glow, code: string, wire: RubberWire): Variant => {
     const cable = wire === 'white' ? 'білому' : 'чорному';
     const wireCode = wire === 'white' ? 'WH' : 'BK';
     const photo = glow === 'warm' && wire === 'white' ? curtainWarm : media(
@@ -236,7 +277,7 @@ function curtainVariants(ledCount: number, size: string, installations: Readonly
       'variant',
     );
     const details = [...(supportingPhotos[glow] ?? []), ...curtainDetails].map(photos => photos[wire]);
-    return variant('GY-Z' + ledCount + '-' + code + '-' + wireCode, glow, wire, size, photo, ...details);
+    return variant('GY-Z' + ledCount + '-' + code + '-' + wireCode, glow, wire, size, price, photo, ...details);
   };
   return [
     makeVariant('warm', 'WW', 'white'), makeVariant('cool', 'CW', 'white'),
@@ -245,7 +286,7 @@ function curtainVariants(ledCount: number, size: string, installations: Readonly
   ];
 }
 
-function curtainModel(ledCount: number, size: string, drops: number, locations: string): Product {
+function curtainModel(ledCount: number, size: string, drops: number, price: number, locations: string): Product {
   const slug = 'zavisa-' + ledCount;
   const installations = {
     warm: curtainWirePhotos(slug + '-installation-warm', 'Тепло-біла гірлянда-штора ' + size + ' на вітрині', 'white', 'application'),
@@ -265,12 +306,12 @@ function curtainModel(ledCount: number, size: string, drops: number, locations: 
       curtainDropPitch,
       {label: 'Матеріал кабелю', value: 'Каучукова ізоляція, мідні жили'},
     ],
-    variants: curtainVariants(ledCount, size, installations),
+    variants: curtainVariants(ledCount, size, price, installations),
   };
 }
 
 function snowflakeMotif(
-  slug: string, sku: string, size: string, glow: 'blue' | 'cool', mode: 'static' | 'flicker',
+  slug: string, sku: string, size: string, glow: 'blue' | 'cool', mode: 'static' | 'flicker', price: number,
   file = slug, shape = '',
 ): Product {
   const name = 'Мотив сніжинка ' + size;
@@ -293,12 +334,12 @@ function snowflakeMotif(
       {label: 'Напруга', value: '230 В'},
       {label: 'Клас захисту', value: 'IP44'},
     ],
-    variants: [variant(sku, glow, 'black', size, photo)],
+    variants: [variant(sku, glow, 'black', size, price, photo)],
   };
 }
 
-const snowflake40Cool = snowflakeMotif('snizhynka-40x40-cool-flicker', 'GY-SNOW40-CW', '40 × 40 см', 'cool', 'flicker');
-const snowflake60Cool = snowflakeMotif('snizhynka-60x60-cool-flicker', 'GY-SNOW60-CW', '60 × 60 см', 'cool', 'flicker');
+const snowflake40Cool = snowflakeMotif('snizhynka-40x40-cool-flicker', 'GY-SNOW40-CW', '40 × 40 см', 'cool', 'flicker', 99_500);
+const snowflake60Cool = snowflakeMotif('snizhynka-60x60-cool-flicker', 'GY-SNOW60-CW', '60 × 60 см', 'cool', 'flicker', 146_000);
 
 // Keep the former shared URL and its two SKU selections usable for saved links.
 export const legacySnowflake: Product = {
@@ -325,10 +366,10 @@ export const archivedIcicles: readonly Product[] = [
     category: 'bakhroma', subcategories: ['vulychni'], featured: false,
     cover: icicleWarm, description: 'Компактна бахрома 2 × 0,5 м зі статичним світінням для коротких карнизів і вхідних груп.',
     variants: unavailable([
-      variant('GY-K090-WW-BK', 'warm', 'black', '2 × 0,5 м', icicleWarm),
-      variant('GY-K090-CW-BK', 'cool', 'black', '2 × 0,5 м', icicleCool),
-      variant('GY-K090-WW-WH', 'warm', 'white', '2 × 0,5 м', icicleWarm),
-      variant('GY-K090-CW-WH', 'cool', 'white', '2 × 0,5 м', icicleCool),
+      variant('GY-K090-WW-BK', 'warm', 'black', '2 × 0,5 м', 93_000, icicleWarm),
+      variant('GY-K090-CW-BK', 'cool', 'black', '2 × 0,5 м', 93_000, icicleCool),
+      variant('GY-K090-WW-WH', 'warm', 'white', '2 × 0,5 м', 93_000, icicleWarm),
+      variant('GY-K090-CW-WH', 'cool', 'white', '2 × 0,5 м', 93_000, icicleCool),
     ]),
   },
 ];
@@ -347,6 +388,36 @@ export const assortment: readonly Product[] = [
     description: 'Вулична бахрома зі 150 світлодіодами. Оберіть тепле або холодне біле основне світіння. Окремі світлодіоди мерехтять холодним білим.',
     specifications: [...icicleSpecifications, {label: 'Колір мерехтіння', value: 'Холодний білий'}],
     variants: icicleVariants(true),
+  },
+  {
+    slug: 'snowfall-50-10m', name: 'Гірлянда «Танучі бурульки» Snowfall, 10 м',
+    cardSubtitle: '10 підвісів по 50 см · 720 LED',
+    category: 'padayuchyi-snih', subcategories: ['vulychni'], featured: false,
+    description: 'Вулична гірлянда з білими світлодіодами, які послідовно загоряються згори вниз. Прозорі підвіси можна розмістити вздовж карниза або на гілках дерев.',
+    specifications: [...longSnowfallSpecifications, {label: 'З’єднання гірлянд', value: 'Так'}],
+    // Retail reference for the longer 50 cm set, listed in 15 m by LEDWorld.
+    variants: [variant('GY-SNOWFALL-50-10M', 'white', 'transparent', '10 м', 326_000, snowfallPhoto, snowfallTenMetresOnTrees)],
+  },
+  {
+    slug: 'snowfall-50-3m', name: 'Гірлянда «Танучі бурульки» Snowfall, 3 м',
+    cardSubtitle: '10 підвісів по 50 см · 720 LED',
+    category: 'padayuchyi-snih', subcategories: ['vulychni'], featured: false,
+    description: 'Триметрова вулична гірлянда з довгими прозорими підвісами. Білі світлодіоди послідовно загоряються згори вниз, створюючи ефект падаючого снігу.',
+    specifications: [...longSnowfallSpecifications, {label: 'З’єднання гірлянд', value: 'Ні'}],
+    variants: [variant('GY-SNOWFALL-50-3M', 'white', 'transparent', '3 м', usdToKopiykas(60), snowfallPhoto, snowfallThreeMetresOnTree)],
+  },
+  {
+    slug: 'meteor-30-3m', name: 'Гірлянда Meteor, 3 м',
+    cardSubtitle: '10 підвісів по 30 см · 300 LED',
+    category: 'padayuchyi-snih', subcategories: ['vulychni'], featured: false,
+    description: 'Вулична гірлянда з короткими прозорими підвісами для гілок дерев і карнизів. Біле світло рухається згори вниз, створюючи ефект падаючого снігу.',
+    specifications: [
+      ...snowfallSpecifications,
+      {label: 'Кількість світлодіодів', value: '300 LED'},
+      {label: 'Довжина підвісу', value: '30 см'},
+      {label: 'З’єднання гірлянд', value: 'Ні'},
+    ],
+    variants: [variant('GY-METEOR-30-3M', 'white', 'transparent', '3 м', usdToKopiykas(40), meteorPhoto, meteorOnTree)],
   },
   {
     slug: 'promin-100', name: 'Гірлянда-нитка ' + strandSize,
@@ -378,10 +449,10 @@ export const assortment: readonly Product[] = [
       {label: 'Матеріал кабелю', value: 'Каучукова ізоляція, мідні жили'},
       {label: 'Заявлений строк служби', value: 'Необмежений'},
     ],
-    variants: curtainVariants(456, curtainSize, curtain456Installations),
+    variants: curtainVariants(456, curtainSize, 428_000, curtain456Installations),
   },
-  curtainModel(912, '2 × 3 м', 24, 'високих вітрин і входів'),
-  curtainModel(288, '1,5 × 1 м', 18, 'вікон і невеликих вітрин'),
+  curtainModel(912, '2 × 3 м', 24, 705_000, 'високих вітрин і входів'),
+  curtainModel(288, '1,5 × 1 м', 18, 378_000, 'вікон і невеликих вітрин'),
   {
     slug: 'sitka-288', name: 'Гірлянда-сітка 2 × 1,5 м',
     category: 'sitka', subcategories: ['vulychni'], featured: false,
@@ -396,28 +467,28 @@ export const assortment: readonly Product[] = [
       {label: 'Матеріал кабелю', value: 'Каучукова ізоляція, мідні жили'},
       {label: 'Потужність', value: '24 Вт'},
     ],
-    variants: [variant('GY-NET288-WH', 'white', 'black', '2 × 1,5 м', net, netGarden, netDiagram)],
+    variants: [variant('GY-NET288-WH', 'white', 'black', '2 × 1,5 м', 399_000, net, netGarden, netDiagram)],
   },
   {
     slug: 'sfera-20', name: 'Гірлянда з кульками «Сфера 20»',
     category: 'kulky', subcategories: ['vulychni'], featured: false,
     cover: galaxyWarm, description: '20 прозорих кульок на кабелі 10 м. Відстань між лампами 50 см.',
     variants: [
-      variant('GY-S020-WW', 'warm', 'black', '10 м', galaxyWarm),
-      variant('GY-S020-CW', 'cool', 'black', '10 м', galaxyCool),
+      variant('GY-S020-WW', 'warm', 'black', '10 м', 305_000, galaxyWarm),
+      variant('GY-S020-CW', 'cool', 'black', '10 м', 305_000, galaxyCool),
     ],
   },
-  snowflakeMotif('snizhynka-30x25-5-cool-flicker', 'GY-SNOW30X255-F-CW', '30 × 25,5 см', 'cool', 'flicker'),
-  snowflakeMotif('snizhynka-40x40-blue', 'GY-SNOW40-BL', '40 × 40 см', 'blue', 'static'),
-  snowflakeMotif('snizhynka-40x40-blue-flicker', 'GY-SNOW40-F-BL', '40 × 40 см', 'blue', 'flicker'),
+  snowflakeMotif('snizhynka-30x25-5-cool-flicker', 'GY-SNOW30X255-F-CW', '30 × 25,5 см', 'cool', 'flicker', 160_000),
+  snowflakeMotif('snizhynka-40x40-blue', 'GY-SNOW40-BL', '40 × 40 см', 'blue', 'static', 95_000),
+  snowflakeMotif('snizhynka-40x40-blue-flicker', 'GY-SNOW40-F-BL', '40 × 40 см', 'blue', 'flicker', 99_500),
   snowflake40Cool,
-  snowflakeMotif('snizhynka-49-5x42-blue', 'GY-SNOW495X42-BL', '49,5 × 42 см', 'blue', 'static', 'snizhynka-blue-diamonds'),
-  snowflakeMotif('snizhynka-49-5x42-cool', 'GY-SNOW495X42-CW', '49,5 × 42 см', 'cool', 'static'),
-  snowflakeMotif('snizhynka-60x60-blue', 'GY-SNOW60-BL', '60 × 60 см', 'blue', 'static'),
+  snowflakeMotif('snizhynka-49-5x42-blue', 'GY-SNOW495X42-BL', '49,5 × 42 см', 'blue', 'static', 210_000, 'snizhynka-blue-diamonds'),
+  snowflakeMotif('snizhynka-49-5x42-cool', 'GY-SNOW495X42-CW', '49,5 × 42 см', 'cool', 'static', 210_000),
+  snowflakeMotif('snizhynka-60x60-blue', 'GY-SNOW60-BL', '60 × 60 см', 'blue', 'static', 139_000),
   snowflake60Cool,
-  snowflakeMotif('snizhynka-60x60-cool-branches', 'GY-SNOW60-F-CW-BR', '60 × 60 см', 'cool', 'flicker',
+  snowflakeMotif('snizhynka-60x60-cool-branches', 'GY-SNOW60-F-CW-BR', '60 × 60 см', 'cool', 'flicker', 146_000,
     'snizhynka-60x60-cool-branches', 'Розгалужені промені'),
-  snowflakeMotif('snizhynka-60-5x52-blue', 'GY-SNOW605X52-BL', '60,5 × 52 см', 'blue', 'static', 'snizhynka-blue-diamonds'),
+  snowflakeMotif('snizhynka-60-5x52-blue', 'GY-SNOW605X52-BL', '60,5 × 52 см', 'blue', 'static', 215_000, 'snizhynka-blue-diamonds'),
   {
     slug: 'retro-s14', name: 'Ретрогірлянда Belt light S14',
     category: 'retro', subcategories: ['vulychni'], featured: true,
@@ -432,8 +503,8 @@ export const assortment: readonly Product[] = [
       {label: 'Клас захисту', value: 'IP44'},
     ],
     variants: [
-      {...variant('GY-S14-2-WW', 'warm', 'black', '2 м', ...filamentGallery), lampCount: 10},
-      {...variant('GY-S14-4-WW', 'warm', 'black', '4 м', ...filamentGallery), lampCount: 20},
+      {...variant('GY-S14-2-WW', 'warm', 'black', '2 м', 190_000, ...filamentGallery), lampCount: 10},
+      {...variant('GY-S14-4-WW', 'warm', 'black', '4 м', 320_000, ...filamentGallery), lampCount: 20},
     ],
   },
   {
@@ -449,15 +520,15 @@ export const assortment: readonly Product[] = [
       {label: 'Напруга', value: '230 В'},
       {label: 'Клас захисту', value: 'IP44'},
     ],
-    variants: [variant('GY-SPIRAL120-RGB', 'rgb', null, '1,2 м', tree, treeGreen, treeRainbow, treeIllustration)],
+    variants: [variant('GY-SPIRAL120-RGB', 'rgb', null, '1,2 м', 695_000, tree, treeGreen, treeRainbow, treeIllustration)],
   },
   {
     slug: 'kabel-zhyvlennia-3a', name: 'Кабель живлення 3 А',
     category: 'aksesuary', subcategories: ['zhyvlennia'], featured: false,
     description: 'Кабель 1,5 м, IP65. Підходить до гірлянди-нитки 10 м зі сталим світінням і «Контура 114».',
     variants: [
-      variant('GY-P3A-BK', null, 'black', '1,5 м'),
-      variant('GY-P3A-WH', null, 'white', '1,5 м'),
+      variant('GY-P3A-BK', null, 'black', '1,5 м', usdToKopiykas(10)),
+      variant('GY-P3A-WH', null, 'white', '1,5 м', usdToKopiykas(10)),
     ],
   },
 ];

@@ -83,6 +83,13 @@ describe('Стартовий асортимент', () => {
     expect(priceLabel(null)).toBe('Ціна уточнюється');
   });
 
+  it('має роздрібну ціну в копійках для кожного артикула', () => {
+    const variants = [...assortment, ...archivedIcicles].flatMap(product => product.variants);
+    const missingPrices = variants.filter(({priceKopiykas}) =>
+      priceKopiykas === null || !Number.isInteger(priceKopiykas) || priceKopiykas <= 0);
+    expect(missingPrices.map(({sku}) => sku)).toEqual([]);
+  });
+
   it('має локальні файли галереї для всіх 20 варіантів вуличної нитки', () => {
     const outdoorStrands = assortment.filter(product => product.category === 'nytka' && product.subcategories.includes('vulychni'));
     const galleries = outdoorStrands.flatMap(product => product.variants.map(variant => variant.gallery));

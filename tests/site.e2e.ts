@@ -8,7 +8,7 @@ test('головна, вкладене меню та клавіатурне по
   await page.goto('/');
   await expect(page.locator('html')).toHaveAttribute('lang', 'uk');
   await expect(page.getByRole('heading', {name: /Світло, що створює/})).toBeVisible();
-  await expect(page.locator('.category-grid a')).toHaveCount(9);
+  await expect(page.locator('.category-grid a')).toHaveCount(10);
   const logo = page.getByRole('banner').getByRole('link', {name: 'Girlyanda — головна'}).locator('img');
   await expect(logo).toHaveAttribute('src', '/media/brand-logo-light.svg');
   await expect(page.getByRole('contentinfo').getByRole('link', {name: 'Girlyanda — головна'}).locator('img'))
@@ -54,6 +54,66 @@ test('головна, вкладене меню та клавіатурне по
   expect(errors).toEqual([]);
 });
 
+test('меню відкриває три вуличні гірлянди з ефектом падаючого снігу', async ({page}, testInfo) => {
+  await page.goto('/');
+  if (testInfo.project.name === 'mobile') {
+    await page.getByRole('button', {name: 'Меню', exact: true}).click();
+    const nav = page.getByRole('navigation', {name: 'Мобільна навігація'});
+    await nav.getByText('Каталог', {exact: true}).click();
+    const category = nav.locator('details.mobile-category').filter({hasText: 'Падаючий сніг'});
+    await category.getByText('Падаючий сніг', {exact: true}).click();
+    await category.getByRole('link', {name: 'Уся категорія'}).click();
+  } else {
+    await page.getByRole('navigation', {name: 'Основна навігація'}).getByRole('button', {name: 'Каталог'}).click();
+    const menu = page.locator('#mega-menu');
+    await menu.getByRole('button', {name: 'Падаючий сніг', exact: true}).click();
+    await menu.getByRole('link', {name: 'Уся категорія'}).click();
+  }
+  const categoryPath = '/katalog/padayuchyi-snih';
+  await expect(page).toHaveURL(categoryPath);
+  await expect(page.getByRole('status')).toHaveText('Знайдено моделей: 3');
+  const models = [
+    {
+      name: 'Гірлянда «Танучі бурульки» Snowfall, 10 м', size: '10 м', tube: '50 см', leds: '720 LED', connects: 'Так', controller: true,
+      photo: 'snowfall-tree.webp', alt: 'Підвіси Snowfall 10 м на гілках великого дерева біля будинку',
+    },
+    {
+      name: 'Гірлянда «Танучі бурульки» Snowfall, 3 м', size: '3 м', tube: '50 см', leds: '720 LED', connects: 'Ні', controller: true,
+      photo: 'snowfall-tree-courtyard.webp', alt: 'Підвіси Snowfall 3 м на листяному дереві у дворі',
+    },
+    {
+      name: 'Гірлянда Meteor, 3 м', size: '3 м', tube: '30 см', leds: '300 LED', connects: 'Ні', controller: false,
+      photo: 'snowfall-tree-evergreen.webp', alt: 'Короткі підвіси Meteor 3 м на хвойному дереві біля кам’яної арки',
+    },
+  ];
+  for (const model of models) {
+    const card = page.getByRole('heading', {name: model.name, level: 3, exact: true});
+    await card.getByRole('link').click();
+    await expect(page.getByRole('heading', {name: model.name, level: 1})).toBeVisible();
+    const specs = page.locator('.info-row dl');
+    for (const [label, value] of [
+      ['Світіння', 'Білий'], ['Провід', 'Прозорий'], ['Розмір', model.size],
+      ['Застосування', 'Вуличне'], ['Джерело світла', 'Світлодіоди (LED)'], ['Кількість підвісів', '10 шт.'],
+      ['Довжина підвісу', model.tube], ['Кількість світлодіодів', model.leds],
+      ['Напруга', '12 В (блок живлення в комплекті)'], ['З’єднання гірлянд', model.connects],
+    ]) {
+      await expect(specs.getByText(label, {exact: true}).locator('+ dd')).toHaveText(value);
+    }
+    const controller = specs.getByText('Контролер', {exact: true});
+    if (model.controller) await expect(controller.locator('+ dd')).toHaveText('Так');
+    else await expect(controller).toHaveCount(0);
+    const photo = page.locator('.detail-image img');
+    await photo.evaluate((image: HTMLImageElement) => image.decode());
+    const thumbnails = page.getByRole('group', {name: 'Фотогалерея варіанта'}).getByRole('button');
+    await expect(thumbnails).toHaveCount(2);
+    await page.getByRole('button', {name: model.alt, exact: true}).click();
+    await expect(photo).toHaveAttribute('src', '/media/works/' + model.photo);
+    await photo.evaluate((image: HTMLImageElement) => image.decode());
+    await page.getByRole('navigation', {name: 'Ваш шлях'}).getByRole('link', {name: 'Падаючий сніг'}).click();
+    await expect(page).toHaveURL(categoryPath);
+  }
+});
+
 test('сторінка монтажу порівнює окремий зимовий будинок', async ({page}) => {
   await page.goto('/montazh');
   const comparison = page.locator('gy-compare figure');
@@ -70,11 +130,36 @@ test('сторінка монтажу порівнює окремий зимов
   expect(sizes).toEqual([[1200, 600], [1200, 600]]);
 });
 
+test('ціни вирівняні під фото в каталозі та на головній', async ({page}) => {
+  for (const path of ['/', '/katalog']) {
+    await page.goto(path);
+    const cards = page.locator('.product-grid .product-card');
+    await expect(cards.first()).toBeVisible();
+    const positions = await cards.evaluateAll(items => items.map(card => {
+      const photo = card.querySelector('.card-image')!.getBoundingClientRect();
+      const price = card.querySelector('.card-price')!.getBoundingClientRect();
+      const title = card.querySelector('h3')!.getBoundingClientRect();
+      return {row: photo.top, photoBottom: photo.bottom, priceTop: price.top, priceBottom: price.bottom, titleTop: title.top};
+    }));
+    const pricesByRow = new Map<number, number>();
+    for (const {row, photoBottom, priceTop, priceBottom, titleTop} of positions) {
+      expect(priceTop).toBeGreaterThanOrEqual(photoBottom);
+      expect(priceBottom).toBeLessThanOrEqual(titleTop);
+      expect(priceTop).toBeCloseTo(pricesByRow.get(row) ?? priceTop, 0);
+      pricesByRow.set(row, priceTop);
+    }
+  }
+});
+
 test('фільтр, вибір артикула, медіа й збереження замовлення', async ({page}) => {
   await page.goto('/katalog');
   await page.getByLabel('Колір світіння', {exact: true}).selectOption('white');
-  await expect(page.getByRole('status')).toHaveText('Знайдено моделей: 3');
+  await expect(page.getByRole('status')).toHaveText('Знайдено моделей: 6');
   const card = page.locator('.product-card').filter({has: page.getByRole('heading', {name: 'Гірлянда-нитка 10 м', exact: true})});
+  const cardPrice = card.locator('.card-price');
+  await expect(cardPrice).toHaveText(/^1\s893,41\s(?:грн|₴)$/);
+  await card.getByRole('button', {name: 'Різнокольоровий (RGB)', exact: true}).click();
+  await expect(cardPrice).toHaveText(/^2\s479,46\s(?:грн|₴)$/);
   await card.getByRole('button', {name: 'Теплий білий', exact: true}).click();
   await expect(card.locator('.card-image img')).toHaveAttribute('src', /promin-100-warm-black\.webp$/);
   await card.getByRole('heading').getByRole('link').click();
@@ -86,7 +171,12 @@ test('фільтр, вибір артикула, медіа й збережен�
   await expect(page.getByText('Артикул GY-P100-WH-BK')).toBeVisible();
   await page.getByRole('group', {name: 'Колір проводу'}).getByRole('button', {name: 'Білий'}).click();
   await expect(page.locator('.detail-image img')).toHaveAttribute('src', /promin-100-white-white\.webp$/);
-  await page.getByRole('group', {name: /^Колір світіння/}).getByRole('button', {name: 'Теплий білий', exact: true}).click();
+  const glowOptions = page.getByRole('group', {name: /^Колір світіння/});
+  const price = page.locator('.variant-summary strong');
+  await glowOptions.getByRole('button', {name: 'Різнокольоровий (RGB)', exact: true}).click();
+  await expect(price).toHaveText(/^2\s479,46\s(?:грн|₴)$/);
+  await glowOptions.getByRole('button', {name: 'Теплий білий', exact: true}).click();
+  await expect(price).toHaveText(/^1\s893,41\s(?:грн|₴)$/);
   await expect(page.locator('.detail-image img')).toHaveAttribute('src', /promin-100-warm-white\.webp$/);
   await expect(page.getByText('Артикул GY-P100-WW-WH')).toBeVisible();
   await page.getByRole('button', {name: 'До кошика', exact: true}).click();
@@ -96,6 +186,7 @@ test('фільтр, вибір артикула, медіа й збережен�
   await expect(page.getByText('Кількість товарів: 1')).toBeVisible();
   await page.getByRole('button', {name: /Збільшити кількість/}).click();
   await expect(page.getByText('Кількість товарів: 2')).toBeVisible();
+  await expect(page.getByText(/^3\s786,82\s(?:грн|₴)$/)).toBeVisible();
   await page.getByRole('link', {name: 'Оформити замовлення'}).click();
   await page.getByLabel('Ім’я').fill('Тест');
   await page.getByLabel('Телефон').fill('+380000000000');
@@ -190,7 +281,7 @@ test('ідеї на головній показують фото, а картк�
     },
     {
       title: 'Простори, дерева й ялинки', slug: 'prostory-dereva-yalynky',
-      photo: 'Ялинка біля дерев’яного будиночка', photoCount: 6,
+      photo: 'Берези в зимовому саду', photoCount: 6,
       idea: 'Простори, дерева, ялинки', source: '/media/illuminated-city-square.webp',
       detail: 'Гірлянди для терас і садових доріжок, підсвічування дерев і ялинок.',
     },
@@ -231,5 +322,6 @@ test('ідеї на головній показують фото, а картк�
   await expect(page).toHaveURL('/roboty');
   await expect(page.locator('.project-grid article'))
     .toHaveCount(categories.reduce((total, category) => total + category.photoCount, 0));
+  await expect(page.locator('.project-grid img[src^="/media/works/snowfall-tree"]')).toHaveCount(0);
   await expect(page.locator('video')).toHaveCount(0);
 });

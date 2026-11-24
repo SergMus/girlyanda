@@ -18,16 +18,15 @@
 .categories-section { background: var(--paper); padding: 2rem 0 2.5rem; border-bottom: 1px solid var(--line); }
 .categories-heading { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: .5rem 1rem; margin-bottom: 1.25rem; }
 .categories-heading h2 { font-size: clamp(1.75rem, 3vw, 2.5rem); }
-.category-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); border: 1px solid var(--line); }
-.category-grid a { display: grid; justify-items: center; align-content: center; gap: .35rem; min-height: 106px; padding: .35rem; text-align: center; font-size: .86rem; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); transition: background .2s ease; }
+.category-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.category-grid a { display: grid; justify-items: center; align-content: center; gap: .35rem; min-height: 106px; padding: .35rem; text-align: center; font-size: .86rem; background: var(--paper); transition: background .2s ease; }
 .category-grid a:hover { background: var(--sand); }
-.category-grid a:nth-child(3n) { border-right: 0; }
-.category-grid a:nth-last-child(-n+3) { border-bottom: 0; }
 .studio-split { display: grid; gap: 2rem; align-items: center; }
 .studio-photo { position: relative; overflow: hidden; }
 .studio-photo img { width: 100%; aspect-ratio: 5 / 4; height: auto; object-fit: cover; }
 .compare-section, .products-section { background: var(--sand); }
 @media (min-width: 720px) {
+  .category-grid { grid-template-columns: repeat(5, minmax(0,1fr)); }
   .studio-split { grid-template-columns: 1.1fr .9fr; gap: clamp(2rem, 8vw, 7rem); }
   .studio-photo img { aspect-ratio: 7/5; }
 }
@@ -38,10 +37,11 @@
   .hero-inner { padding-top: 130px; }
   .hero-bottom { padding: .8rem 0; }
   .categories-section { padding-block: 2.3rem 3rem; }
-  .category-grid { grid-template-columns: repeat(9, minmax(0,1fr)); }
-  .category-grid a { min-height: 124px; border-bottom: 0; }
-  .category-grid a:nth-child(3n) { border-right: 1px solid var(--line); }
-  .category-grid a:last-child { border-right: 0; }
+  .category-grid a { min-height: 124px; }
+}
+
+@media (min-width: 1180px) {
+  .category-grid { grid-template-columns: repeat(10, minmax(0,1fr)); }
 }
 
 .project-card h3 { margin-top: .7rem; }

@@ -10,7 +10,7 @@ export const glowOptions = {
   rgb: {label: 'Різнокольоровий (RGB)', swatch: 'conic-gradient(#d98266, #dfb549, #67a08b, #6e80cf, #d98266)'},
 } as const;
 
-export const wireOptions = {white: 'Білий', black: 'Чорний'} as const;
+export const wireOptions = {white: 'Білий', black: 'Чорний', transparent: 'Прозорий'} as const;
 export type Glow = keyof typeof glowOptions;
 export type Wire = keyof typeof wireOptions;
 export type Availability = 'available' | 'unavailable' | 'unknown';
@@ -18,7 +18,7 @@ export type Availability = 'available' | 'unavailable' | 'unknown';
 export interface ProductMedia {
   readonly file: string;
   readonly alt: string;
-  readonly kind: 'variant' | 'series' | 'reference' | 'application';
+  readonly kind: 'variant' | 'series' | 'reference' | 'application' | 'illustration';
   readonly note?: string;
 }
 
