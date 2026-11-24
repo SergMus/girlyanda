@@ -1,17 +1,17 @@
 # Girlyanda
 
-Локальный MVP украиноязычного интернет-магазина и студии праздничного освещения. Публичный каталог использует названия и артикулы Girlyanda. Источники ассортимента указаны во внутренней документации.
+A local MVP for a Ukrainian-language online store and festive lighting studio. The public catalog uses Girlyanda product names and SKUs. Product assortment sources are listed in the internal documentation.
 
-## Запуск
+## Getting started
 
-Нужен Node.js 22.22.3+, 24.15.0+ или 26.x в пределах соответствующей основной версии.
+Use Node.js 22.22.3 or later in the 22.x series, 24.15.0 or later in the 24.x series, or any 26.x release.
 
 ```sh
 npm ci
 npm start
 ```
 
-Приложение открывается на [127.0.0.1:4200](http://127.0.0.1:4200/). Команда `npm start` также запускает локальный API заявок на порту 4300.
+The application runs on port 4200. `npm start` also starts the local installation request API on port 4300. [Open the application](http://127.0.0.1:4200/)
 
 ```sh
 npm test
@@ -20,31 +20,31 @@ npm run e2e
 npm run build
 ```
 
-## Архитектура
+## Architecture
 
-- Angular 22.3, TypeScript strict, standalone-компоненты, Signals, ленивые маршруты и адаптивная SCSS-система. Manrope используется в заголовках, Golos Text — в тексте и элементах интерфейса. Логотип «Світлова спіраль» доступен в двух цветовых версиях в `public/media`. Шрифты включены в сборку.
-- `src/app/catalog` содержит категории, типы, ассортимент, галерею вариантов, поиск, фильтрацию и сортировку. `CatalogRepository` служит точкой подключения API. Модель содержит список допустимых сочетаний свечения, провода и размера, цену в копейках, наличие и галерею для каждого варианта.
-- `src/app/orders` содержит корзину по артикулам и оформление. Варианты хранятся в `localStorage`. `SubmissionGateway` сохраняет демонстрационные заказы в IndexedDB и передаёт заявки на монтаж с фото в `POST /api/installation`.
-- `src/app/studio` содержит страницы монтажа, портфолио, информации о студии и форму. `src/app/shared` содержит общие иконки и сравнение до/после. Предметные SVG для каталога и монтажа находятся в `public/media`. Карточки на главной ведут в три галереи по адресам `/roboty/:category`. Названия объектов, необязательные локации и фотографии описаны в `src/app/studio/projects.ts`. Фотографии для блока «Ідеї для вашого простору» описаны в `src/app/home/home.page.ts`.
-- Цена и наличие остаются неопределёнными до согласования розницы и источника остатков. Фактические контакты, историю и состав команды нужно добавить на страницы студии, когда будут данные.
+- The frontend uses Angular 22.3, TypeScript in strict mode, standalone components, Signals, lazy-loaded routes, and responsive SCSS. Headings use Manrope, while body text and interface controls use Golos Text. The “Light Spiral” logo is available in two color variants in `public/media`. The build includes both fonts.
+- `src/app/catalog` contains categories, types, the product assortment, variant galleries, search, filtering, and sorting. `CatalogRepository` provides the integration point for an API. The product model defines valid combinations of light color, wire color, and size. Each variant has a price in kopiykas, an availability status, and a gallery.
+- `src/app/orders` contains the SKU-based cart and checkout. Selected variants are stored in `localStorage`. `SubmissionGateway` saves demo orders in IndexedDB and sends installation requests with photos to `POST /api/installation`.
+- `src/app/studio` contains the installation, portfolio, and studio information pages, along with the installation request form. `src/app/shared` contains shared icons and the before-and-after comparison component. The catalog and installation SVG illustrations are in `public/media`. The homepage cards link to three galleries at `/roboty/:category`. Project names, optional locations, and photos are defined in `src/app/studio/projects.ts`. Photos for the “Ideas for Your Space” section are defined in `src/app/home/home.page.ts`.
+- Prices and availability remain unspecified until retail pricing is agreed on and an inventory source is confirmed. Add the studio’s actual contact information, history, and team details once that information is available.
 
-## Отправка заявок на монтаж
+## Sending installation requests
 
-Форма «Заявка на монтаж» отправляет текст и фото JPEG, PNG или WebP размером до 10 МБ на `umt1@ukr.net`. При недоступности отправки форма предлагает открыть письмо с заполненными полями в почтовом приложении. Фото в этом случае прикрепляется вручную.
+The “Installation Request” form sends the message and an optional JPEG, PNG, or WebP photo of up to 10 MB to `umt1@ukr.net`. If the form cannot send the request, it offers to open a pre-filled email in the user’s mail app. The user can attach the photo manually.
 
-Создайте отдельный пароль приложения в настройках почты UKR.NET и сохраните его в серверной переменной `GIRLYANDA_SMTP_PASSWORD`. Для локального запуска можно заполнить корневой файл `.env`, который исключён из Git. Сервер использует `smtp.ukr.net` на порту 465 с TLS, имя отправителя берётся из `GIRLYANDA_SMTP_USER` и по умолчанию равно `umt1@ukr.net`. [Инструкция UKR.NET по созданию пароля приложения](https://wiki.ukr.net/GenerateAppSpecificPassword).
+Create a separate app password in your UKR.NET mail settings and save it in the `GIRLYANDA_SMTP_PASSWORD` server environment variable. For local development, set it in the root `.env` file, which is excluded from Git. The server connects to `smtp.ukr.net` on port 465 using TLS. The sender address comes from `GIRLYANDA_SMTP_USER` and defaults to `umt1@ukr.net`. [UKR.NET guide to creating an app password](https://wiki.ukr.net/GenerateAppSpecificPassword)
 
 ```sh
 npm run build
 npm run serve:mail
 ```
 
-Сервер раздаёт сборку и принимает заявки на [127.0.0.1:4300](http://127.0.0.1:4300/zaiavka). При разработке Angular перенаправляет `/api/installation` на API, который запускает `npm start`. После изменения `.env` перезапустите сервер, чтобы загрузить новые настройки почты. Для размещения со статическим хостингом направьте этот маршрут на Node-сервер с настроенной почтой. При размещении всего сайта на Node можно задать `GIRLYANDA_SERVER_HOST` и `GIRLYANDA_SERVER_PORT` в окружении хостинга.
+The server serves the build and accepts installation requests on port 4300. During development, Angular proxies `/api/installation` to the API started by `npm start`. Restart the server after editing `.env` to load the new mail settings. If you use static hosting, route `/api/installation` to a Node.js server configured to send email. If you host the entire site on Node.js, set `GIRLYANDA_SERVER_HOST` and `GIRLYANDA_SERVER_PORT` in the hosting environment as needed. [Open the local installation request form](http://127.0.0.1:4300/zaiavka)
 
-## SEO и медиа
+## SEO and media
 
-Сборка предварительно генерирует HTML публичных страниц, разделов портфолио, категорий, подкатегорий и товаров в `dist/girlyanda/browser`. Корзина и оформление имеют `noindex`, локальные данные подключаются после первого рендера. Для статического хостинга настройте выдачу существующего `index.html` для каждой директории и переход на `index.csr.html` для остальных адресов. После появления домена добавьте канонические URL, карту сайта и параметры публикации. SSR на каждый запрос имеет смысл пересмотреть при появлении регулярно меняющегося каталога или данных, которые должны присутствовать в индексируемом HTML до пересборки.
+The build pre-renders HTML for public pages, portfolio sections, categories, subcategories, and product pages in `dist/girlyanda/browser`. The cart and checkout use `noindex`, and locally stored data loads after the initial render. For static hosting, configure the host to serve an existing `index.html` for each directory and fall back to `index.csr.html` for other routes. Once the site has a domain, add canonical URLs, a sitemap, and deployment settings. Revisit per-request server-side rendering if the catalog starts changing frequently or if data needs to appear in indexable HTML before the next build.
 
-Постеры и фотографии хранятся локально в WebP. Главная начинает с адаптивного постера с высоким приоритетом. Затем на широких экранах при допустимых настройках движения и трафика запускается короткое WebM. Видеоряд собран из демонстрационных изображений. Демонстрационные ролики в портфолио загружаются при открытии просмотрщика. Там можно пролистывать фото и видео в выбранной категории. Сравнение фасада до и после доступно в общей галерее и в разделе домов.
+Posters and photos are stored locally in WebP format. The homepage gives a responsive poster loading priority. On wide screens, a short WebM video plays when the user’s motion and data-saving settings allow it. The video uses demonstration images. Portfolio demo videos load when the viewer opens. Users can browse photos and videos within the selected category. The before-and-after facade comparison is available in the main gallery and in the residential gallery.
 
-Соответствие артикулов, карточки поставщиков и ориентиры по ассортименту описаны в [подборке](docs/assortment.md). Происхождение локальных изображений указано в [реестре медиа](docs/media.md).
+The documentation covers SKU mappings, supplier listings, product selection references, and local image sources. [Product assortment guide](docs/assortment.md) · [Media register](docs/media.md)
