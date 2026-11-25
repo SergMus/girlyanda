@@ -11,7 +11,7 @@ npm ci
 npm start
 ```
 
-The application runs on port 4200. `npm start` also starts the local installation request API on port 4300. [Open the application](http://127.0.0.1:4200/)
+The application runs on port 4200. `npm start` also starts the local submission API on port 4300. [Open the application](http://127.0.0.1:4200/)
 
 ```sh
 npm test
@@ -24,13 +24,15 @@ npm run build
 
 - The frontend uses Angular 22.3, TypeScript in strict mode, standalone components, Signals, lazy-loaded routes, and responsive SCSS. Headings use Manrope, while body text and interface controls use Golos Text. The “Light Spiral” logo is available in two color variants in `public/media`. The build includes both fonts.
 - `src/app/catalog` contains categories, types, the product assortment, variant galleries, search, filtering, and sorting. `CatalogRepository` provides the integration point for an API. The product model defines valid combinations of light color, wire color, and size. Each variant has a price in kopiykas, an availability status, and a gallery.
-- `src/app/orders` contains the SKU-based cart and checkout. Selected variants are stored in `localStorage`. `SubmissionGateway` saves demo orders in IndexedDB and sends installation requests with photos to `POST /api/installation`.
+- `src/app/orders` contains the SKU-based cart and checkout. Selected variants are stored in `localStorage`. `SubmissionGateway` submits orders to `POST /api/orders` and installation requests with photos to `POST /api/installation`.
 - `src/app/studio` contains the installation, portfolio, and studio information pages, along with the installation request form. `src/app/shared` contains shared icons and the before-and-after comparison component. The catalog and installation SVG illustrations are in `public/media`. The homepage cards link to three galleries at `/roboty/:category`. Project names, optional locations, and photos are defined in `src/app/studio/projects.ts`. Photos for the “Ideas for Your Space” section are defined in `src/app/home/home.page.ts`.
 - Prices and availability remain unspecified until retail pricing is agreed on and an inventory source is confirmed. Add the studio’s actual contact information, history, and team details once that information is available.
 
-## Sending installation requests
+## Sending orders and installation requests
 
 The “Installation Request” form sends the message and an optional JPEG, PNG, or WebP photo of up to 10 MB to `umt1@ukr.net`. If the form cannot send the request, it offers to open a pre-filled email in the user’s mail app. The user can attach the photo manually.
+
+Checkout sends the customer’s contact and delivery details, item SKUs, and quantities to the same inbox. The checkout page removes the submitted quantities from the cart after the mail provider accepts the order email.
 
 For Resend, verify a sending domain such as `notify.girlyanda.net.ua` and create a key with sending access. Set `GIRLYANDA_RESEND_API_KEY` and `GIRLYANDA_RESEND_FROM` in the server environment. The sender address must belong to the verified domain, for example `no-reply@notify.girlyanda.net.ua`. On Render, add both values under Environment. Resend sends over HTTPS and takes precedence when its API key is configured. [Verify a Resend domain](https://resend.com/docs/add-a-domain) · [Manage Resend API keys](https://resend.com/docs/dashboard/api-keys/introduction)
 
@@ -41,11 +43,11 @@ npm run build
 npm run serve:mail
 ```
 
-The server serves the build and accepts installation requests on port 4300. During development, Angular proxies `/api/installation` to the API started by `npm start`. Restart the server after editing `.env` to load the new mail settings. If you use static hosting, route `/api/installation` to a Node.js server configured to send email. If you host the entire site on Node.js, set `GIRLYANDA_SERVER_HOST` and `GIRLYANDA_SERVER_PORT` in the hosting environment as needed. [Open the local installation request form](http://127.0.0.1:4300/zaiavka)
+The server serves the build and accepts orders and installation requests on port 4300. During development, Angular proxies `/api/orders` and `/api/installation` to the API started by `npm start`. Restart the server after editing `.env` to load the new mail settings. If you use static hosting, route both API paths to a Node.js server configured to send email. If you host the entire site on Node.js, set `GIRLYANDA_SERVER_HOST` and `GIRLYANDA_SERVER_PORT` in the hosting environment as needed. [Open the local installation request form](http://127.0.0.1:4300/zaiavka)
 
 ## Cloudflare Workers deployment
 
-The Worker serves the pre-rendered Angular build as static assets and handles `/api/installation` on the same origin. After running `npm ci` and signing in with Wrangler, run `npm run deploy:cloudflare` to deploy to the `workers.dev` address shown by the CLI.
+The Worker serves the pre-rendered Angular build as static assets and handles `/api/orders` and `/api/installation` on the same origin. After running `npm ci` and signing in with Wrangler, run `npm run deploy:cloudflare` to deploy to the `workers.dev` address shown by the CLI.
 
 In Cloudflare, open the Worker's **Settings → Variables and Secrets**. Add `GIRLYANDA_RESEND_API_KEY` as a secret and `GIRLYANDA_RESEND_FROM` as a variable. Verify the preview site and submit a test request with a photo before switching the custom domain. Copy the `notify` sending records to Cloudflare DNS before changing nameservers. [Worker secrets](https://developers.cloudflare.com/workers/configuration/secrets/) · [Worker custom domains](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/)
 

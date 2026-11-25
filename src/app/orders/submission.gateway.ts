@@ -45,28 +45,25 @@ export class SubmissionGateway {
     return id;
   }
 
-  async sendOrder(payload: OrderRequest): Promise<string> {
-    const database = await new Promise<IDBDatabase>((resolve, reject) => {
-      const request = indexedDB.open('girlyanda-preview', 1);
-      request.onupgradeneeded = () => request.result.createObjectStore('submissions', {keyPath: 'id'});
-      request.onerror = () => reject(request.error);
-      request.onblocked = () => reject(new Error('Preview storage is blocked'));
-      request.onsuccess = () => resolve(request.result);
-    });
+  async sendOrder({name, phone, city, delivery, lines}: OrderRequest, requestId: string): Promise<string> {
+    const body = new FormData();
+    body.set('requestId', requestId);
+    body.set('name', name);
+    body.set('phone', phone);
+    body.set('city', city);
+    body.set('delivery', delivery);
+    body.set('lines', JSON.stringify(lines));
 
-    const id = crypto.randomUUID();
-    try {
-      await new Promise<void>((resolve, reject) => {
-        const operation = database.transaction('submissions', 'readwrite');
-        operation.oncomplete = () => resolve();
-        operation.onabort = () => reject(operation.error);
-        operation.onerror = () => reject(operation.error);
-        operation.objectStore('submissions').add({id, type: 'order', payload, createdAt: new Date().toISOString()});
-      });
-      return id.slice(0, 8).toUpperCase();
-    } finally {
-      database.close();
-    }
+    const response = await fetch('/api/orders', {
+      method: 'POST',
+      body,
+      headers: {Accept: 'application/json'},
+      signal: AbortSignal.timeout(120_000),
+    });
+    if (response.status !== 201) throw new Error('Order submission failed');
+    const {id} = await response.json() as {id?: unknown};
+    if (id !== requestId.slice(0, 8).toUpperCase()) throw new Error('Invalid order receipt');
+    return id;
   }
 }
 

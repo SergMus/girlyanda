@@ -1,16 +1,16 @@
 import express from 'express';
 import nodemailer from 'nodemailer';
-import { installationMessage, recipient, uploadLimit } from './installation-request.mjs';
+import { recipient } from './submission-request.mjs';
 import { sendResendEmail } from './resend.mjs';
 
 const rateWindow = 10 * 60_000;
 
-export function installationMail(env = process.env) {
+export function configureMail(env = process.env) {
   const resendKey = env.GIRLYANDA_RESEND_API_KEY?.trim();
   if (resendKey) {
     const from = env.GIRLYANDA_RESEND_FROM?.trim();
     if (!from) return undefined;
-    return message => sendResendEmail(resendKey, from, message);
+    return (message, idempotencyKey) => sendResendEmail(resendKey, from, message, idempotencyKey);
   }
 
   const password = env.GIRLYANDA_SMTP_PASSWORD;
@@ -34,7 +34,7 @@ export function installationMail(env = process.env) {
   };
 }
 
-export function installationRoute(sendMail) {
+export function submissionRoute(sendMail, {createMessage, uploadLimit, name}) {
   const router = express.Router();
   const attempts = new Map();
   let nextCleanup = Date.now() + rateWindow;
@@ -73,12 +73,12 @@ export function installationRoute(sendMail) {
       return res.sendStatus(400);
     }
 
-    const result = await installationMessage(data);
+    const result = await createMessage(data);
     if ('status' in result) return res.sendStatus(result.status);
     try {
-      await sendMail(result.message);
+      await sendMail(result.message, result.idempotencyKey);
     } catch (error) {
-      console.error('Installation mail failed', error?.code ?? 'MAIL_ERROR');
+      console.error(name + ' mail failed', error?.code ?? 'MAIL_ERROR');
       return res.sendStatus(502);
     }
     res.status(201).json({id: result.id});

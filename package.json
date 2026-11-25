@@ -7,7 +7,7 @@
     "build": "ng build",
     "serve:mail": "node --env-file-if-exists=.env server/index.mjs",
     "deploy:cloudflare": "npm run build && wrangler deploy",
-    "test": "vitest run tests/catalog.test.ts tests/installation.test.mjs",
+    "test": "vitest run tests/catalog.test.ts tests/mail.test.mjs",
     "e2e": "playwright test"
   },
   "engines": {

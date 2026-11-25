@@ -1,4 +1,4 @@
-export async function sendResendEmail(apiKey, from, {to, subject, text, attachments}) {
+export async function sendResendEmail(apiKey, from, {to, subject, text, attachments}, idempotencyKey) {
   const fields = JSON.stringify({from: 'Girlyanda <' + from + '>', to: [to], subject, text});
   // Keep the base64 attachment out of JSON.stringify to avoid scanning the entire photo again.
   const body = new Blob([
@@ -14,9 +14,11 @@ export async function sendResendEmail(apiKey, from, {to, subject, text, attachme
     ]),
     ']}',
   ]);
+  const headers = {Authorization: 'Bearer ' + apiKey, 'Content-Type': 'application/json'};
+  if (idempotencyKey) headers['Idempotency-Key'] = idempotencyKey;
   const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
-    headers: {Authorization: 'Bearer ' + apiKey, 'Content-Type': 'application/json'},
+    headers,
     body,
     signal: AbortSignal.timeout(20_000),
   });

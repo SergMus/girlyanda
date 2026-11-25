@@ -151,7 +151,7 @@ test('ціни вирівняні під фото в каталозі та на 
   }
 });
 
-test('фільтр, вибір артикула, медіа й збереження замовлення', async ({page}) => {
+test('фільтр, вибір артикула, медіа й надсилання замовлення', async ({page}) => {
   await page.goto('/katalog');
   await page.getByLabel('Колір світіння', {exact: true}).selectOption('white');
   await expect(page.getByRole('status')).toHaveText('Знайдено моделей: 6');
@@ -192,9 +192,33 @@ test('фільтр, вибір артикула, медіа й збережен�
   await page.getByLabel('Телефон').fill('+380000000000');
   await page.getByLabel('Місто').fill('Київ');
   await page.getByLabel('Відділення або адреса').fill('Тестове відділення');
-  await page.getByRole('button', {name: 'Зберегти замовлення'}).click();
-  await expect(page.getByRole('heading', {name: /Замовлення .* збережено/})).toBeVisible();
+  const submissions: {requestId: string; lines: unknown; delivery: FormDataEntryValue | null}[] = [];
+  await page.route('**/api/orders', async route => {
+    const request = route.request();
+    expect(request.method()).toBe('POST');
+    const data = await new Request(request.url(), {
+      method: request.method(),
+      headers: request.headers(),
+      body: new Uint8Array(request.postDataBuffer()!),
+    }).formData();
+    const requestId = String(data.get('requestId'));
+    submissions.push({requestId, lines: JSON.parse(String(data.get('lines'))), delivery: data.get('delivery')});
+    await route.fulfill(submissions.length === 1
+      ? {status: 502}
+      : {status: 201, json: {id: requestId.slice(0, 8).toUpperCase()}});
+  });
+  const submit = page.getByRole('button', {name: 'Надіслати замовлення'});
+  await submit.click();
+  await expect(page.getByRole('alert')).toContainText('Надіслати замовлення не вдалося');
+  await expect(page.getByRole('link', {name: 'Кошик, товарів: 2'})).toBeVisible();
+  await expect(page.getByLabel('Відділення або адреса')).toHaveValue('Тестове відділення');
+
+  await submit.click();
+  await expect(page.getByRole('heading', {name: /^Замовлення [A-F0-9]{8} надіслано$/})).toBeVisible();
   await expect(page.getByRole('link', {name: 'Кошик, товарів: 0'})).toBeVisible();
+  expect(submissions).toHaveLength(2);
+  expect(submissions[0]).toMatchObject({lines: [{sku: 'GY-P100-WW-WH', quantity: 2}], delivery: 'Тестове відділення'});
+  expect(submissions[1]).toEqual(submissions[0]);
 });
 
 test('окрема заявка на монтаж додає підказки й надсилає фото разом із заявкою', async ({page}) => {

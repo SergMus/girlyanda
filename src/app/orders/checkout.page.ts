@@ -9,14 +9,13 @@ import { field, SubmissionGateway } from './submission.gateway';
     <nav class="breadcrumbs" aria-label="Ваш шлях"><a routerLink="/">Головна</a><a routerLink="/koshyk">Кошик</a><span aria-current="page">Оформлення</span></nav>
     <h1>Оформлення замовлення</h1>
     @if (receipt()) {
-      <div class="empty-state" role="status"><h2>Замовлення {{ receipt() }} збережено</h2><p>Дані залишилися в цьому браузері.</p><a class="button primary" routerLink="/katalog">Повернутися до каталогу</a></div>
+      <div class="empty-state" role="status"><h2>Замовлення {{ receipt() }} надіслано</h2><p>Ми зв’яжемося з вами, щоб підтвердити наявність і узгодити оплату та доставку.</p><a class="button primary" routerLink="/katalog">Повернутися до каталогу</a></div>
     } @else if (cart.hasUnavailable()) {
       <div class="empty-state"><h2>У кошику є недоступні товари</h2><a class="button primary" routerLink="/koshyk">Повернутися до кошика</a></div>
     } @else if (cart.lines().length) {
       <div class="columns">
         <div>
           <h2>Дані для доставки</h2>
-          <p class="notice">Замовлення зберігається лише в цьому браузері. Оплата й доставка наразі недоступні.</p>
           <ul class="order-list">
             @for (line of cart.lines(); track line.sku) { <li>{{ line.product.name }} · {{ line.sku }} × {{ line.quantity }}</li> }
           </ul>
@@ -29,7 +28,7 @@ import { field, SubmissionGateway } from './submission.gateway';
           <label>Місто <input name="city" required autocomplete="address-level2" maxlength="100"></label>
           <label>Відділення або адреса <input name="delivery" required autocomplete="street-address" maxlength="180"></label>
           @if (error()) { <p class="form-error" role="alert">{{ error() }}</p> }
-          <button class="button primary" type="submit" [disabled]="busy()">{{ busy() ? 'Збереження…' : 'Зберегти замовлення' }}</button>
+          <button class="button primary" type="submit" [disabled]="busy()">{{ busy() ? 'Надсилання…' : 'Надіслати замовлення' }}</button>
         </form>
       </div>
     } @else {
@@ -40,6 +39,7 @@ import { field, SubmissionGateway } from './submission.gateway';
 export class CheckoutPage {
   readonly cart = inject(CartStore);
   private readonly gateway = inject(SubmissionGateway);
+  private pendingOrder?: {payload: string; requestId: string};
   readonly busy = signal(false);
   readonly receipt = signal('');
   readonly error = signal('');
@@ -58,15 +58,19 @@ export class CheckoutPage {
       return;
     }
     const lines = this.cart.lines().map(({sku, quantity}) => ({sku, quantity}));
+    const order = {name, phone, city, delivery, lines};
+    const payload = JSON.stringify(order);
     this.busy.set(true);
     try {
-      this.receipt.set(await this.gateway.sendOrder({name, phone, city, delivery, lines}));
+      if (this.pendingOrder?.payload !== payload) this.pendingOrder = {payload, requestId: crypto.randomUUID()};
+      this.receipt.set(await this.gateway.sendOrder(order, this.pendingOrder.requestId));
+      this.pendingOrder = undefined;
       for (const line of lines) {
         const quantity = this.cart.lines().find(item => item.sku === line.sku)?.quantity ?? 0;
         this.cart.setQuantity(line.sku, quantity - line.quantity);
       }
     } catch {
-      this.error.set('Зберегти замовлення не вдалося. Спробуйте ще раз.');
+      this.error.set('Надіслати замовлення не вдалося. Спробуйте ще раз.');
     } finally {
       this.busy.set(false);
     }

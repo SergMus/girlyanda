@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import worker from '../server/cloudflare-worker.mjs';
-import { installationMail } from '../server/installation.mjs';
+import { configureMail } from '../server/mail.mjs';
 
 const config = {
   GIRLYANDA_RESEND_API_KEY: 'test-key',
@@ -21,7 +21,7 @@ describe('Resend installation mail', () => {
     const fetchEmail = vi.fn().mockResolvedValue(Response.json({id: 'email-id'}));
     vi.stubGlobal('fetch', fetchEmail);
     const photo = Buffer.from('89504e470d0a1a0a', 'hex');
-    const sendMail = installationMail({...config, GIRLYANDA_SMTP_PASSWORD: 'unused'});
+    const sendMail = configureMail({...config, GIRLYANDA_SMTP_PASSWORD: 'unused'});
 
     await sendMail({...request, attachments: [{filename: 'photo.png', content: photo}]});
 
@@ -40,14 +40,69 @@ describe('Resend installation mail', () => {
   it('reports a provider rejection without retrying through SMTP', async () => {
     const fetchEmail = vi.fn().mockResolvedValue(new Response('Rate limit exceeded', {status: 429}));
     vi.stubGlobal('fetch', fetchEmail);
-    const sendMail = installationMail({...config, GIRLYANDA_SMTP_PASSWORD: 'unused'});
+    const sendMail = configureMail({...config, GIRLYANDA_SMTP_PASSWORD: 'unused'});
 
     await expect(sendMail(request)).rejects.toMatchObject({code: 'RESEND_HTTP_429'});
     expect(fetchEmail).toHaveBeenCalledTimes(1);
   });
 
   it('disables a Resend configuration without a sender address', () => {
-    expect(installationMail({GIRLYANDA_RESEND_API_KEY: 'test-key'})).toBeUndefined();
+    expect(configureMail({GIRLYANDA_RESEND_API_KEY: 'test-key'})).toBeUndefined();
+  });
+});
+
+describe('Cloudflare order route', () => {
+  const env = {...config, INSTALLATION_LIMIT: {limit: async () => ({success: true})}};
+  const requestId = 'abcdef01-2345-4678-9abc-def012345678';
+
+  function orderRequest(lines) {
+    const fields = new FormData();
+    fields.set('requestId', requestId);
+    fields.set('name', 'Тест');
+    fields.set('phone', '+380000000000');
+    fields.set('city', 'Київ');
+    fields.set('delivery', 'Відділення № 1');
+    fields.set('lines', JSON.stringify(lines));
+    return new Request('https://example.com/api/orders', {method: 'POST', body: fields});
+  }
+
+  it('sends the delivery details and cart lines to the store with a stable order number', async () => {
+    const fetchEmail = vi.fn().mockImplementation(() => Response.json({id: 'email-id'}));
+    vi.stubGlobal('fetch', fetchEmail);
+    const lines = [{sku: 'GY-P100-WW-WH', quantity: 2}, {sku: 'GY-S14-2-WW', quantity: 1}];
+
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const response = await worker.fetch(orderRequest(lines), env);
+      expect(response.status).toBe(201);
+      expect(await response.json()).toEqual({id: 'ABCDEF01'});
+    }
+
+    for (const [url, {headers, body}] of fetchEmail.mock.calls) {
+      expect(url).toBe('https://api.resend.com/emails');
+      expect(headers['Idempotency-Key']).toBe('order/' + requestId);
+      expect(JSON.parse(await body.text())).toMatchObject({
+        to: ['umt1@ukr.net'],
+        subject: 'Girlyanda · Замовлення ABCDEF01',
+        text: 'Замовлення ABCDEF01\nІм’я: Тест\nТелефон: +380000000000\nМісто: Київ\n' +
+          'Відділення або адреса: Відділення № 1\n\nТовари:\nGY-P100-WW-WH × 2\nGY-S14-2-WW × 1',
+        attachments: [],
+      });
+    }
+    expect(fetchEmail).toHaveBeenCalledTimes(2);
+  });
+
+  it.each([
+    {reason: 'an empty cart', lines: []},
+    {reason: 'an excessive quantity', lines: [{sku: 'GY-P100-WW-WH', quantity: 100}]},
+    {reason: 'a repeated SKU', lines: [{sku: 'GY-P100-WW-WH', quantity: 1}, {sku: 'GY-P100-WW-WH', quantity: 2}]},
+  ])('rejects $reason before sending email', async ({lines}) => {
+    const fetchEmail = vi.fn();
+    vi.stubGlobal('fetch', fetchEmail);
+
+    const response = await worker.fetch(orderRequest(lines), env);
+
+    expect(response.status).toBe(400);
+    expect(fetchEmail).not.toHaveBeenCalled();
   });
 });
 

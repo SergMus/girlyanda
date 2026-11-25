@@ -1,10 +1,14 @@
 import { Buffer } from 'node:buffer';
+import { recipient, textField } from './submission-request.mjs';
 
-export const recipient = 'umt1@ukr.net';
 const photoLimit = 10 * 1024 * 1024;
-export const uploadLimit = photoLimit + 64 * 1024;
+export const installationSubmission = {
+  name: 'Installation',
+  uploadLimit: photoLimit + 64 * 1024,
+  createMessage: installationMessage,
+};
 
-export async function installationMessage(data) {
+async function installationMessage(data) {
   const name = textField(data, 'name', 80);
   const phone = textField(data, 'phone', 25);
   const objectType = textField(data, 'objectType', 80);
@@ -41,12 +45,6 @@ export async function installationMessage(data) {
       attachments,
     },
   };
-}
-
-function textField(data, key, maxLength) {
-  const value = data.get(key);
-  if (typeof value !== 'string' || value.length > maxLength) return '';
-  return value.trim();
 }
 
 function imageExtension(content) {
