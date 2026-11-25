@@ -43,6 +43,12 @@ npm run serve:mail
 
 The server serves the build and accepts installation requests on port 4300. During development, Angular proxies `/api/installation` to the API started by `npm start`. Restart the server after editing `.env` to load the new mail settings. If you use static hosting, route `/api/installation` to a Node.js server configured to send email. If you host the entire site on Node.js, set `GIRLYANDA_SERVER_HOST` and `GIRLYANDA_SERVER_PORT` in the hosting environment as needed. [Open the local installation request form](http://127.0.0.1:4300/zaiavka)
 
+## Cloudflare Workers deployment
+
+The Worker serves the pre-rendered Angular build as static assets and handles `/api/installation` on the same origin. After running `npm ci` and signing in with Wrangler, run `npm run deploy:cloudflare` to deploy to the `workers.dev` address shown by the CLI.
+
+In Cloudflare, open the Worker's **Settings → Variables and Secrets**. Add `GIRLYANDA_RESEND_API_KEY` as a secret and `GIRLYANDA_RESEND_FROM` as a variable. Verify the preview site and submit a test request with a photo before switching the custom domain. Copy the `notify` sending records to Cloudflare DNS before changing nameservers. [Worker secrets](https://developers.cloudflare.com/workers/configuration/secrets/) · [Worker custom domains](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/)
+
 ## SEO and media
 
 The build pre-renders HTML for public pages, portfolio sections, categories, subcategories, and product pages in `dist/girlyanda/browser`. The cart and checkout use `noindex`, and locally stored data loads after the initial render. For static hosting, configure the host to serve an existing `index.html` for each directory and fall back to `index.csr.html` for other routes. Once the site has a domain, add canonical URLs, a sitemap, and deployment settings. Revisit per-request server-side rendering if the catalog starts changing frequently or if data needs to appear in indexable HTML before the next build.
