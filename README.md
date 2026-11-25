@@ -32,7 +32,9 @@ npm run build
 
 The “Installation Request” form sends the message and an optional JPEG, PNG, or WebP photo of up to 10 MB to `umt1@ukr.net`. If the form cannot send the request, it offers to open a pre-filled email in the user’s mail app. The user can attach the photo manually.
 
-Create a separate app password in your UKR.NET mail settings and save it in the `GIRLYANDA_SMTP_PASSWORD` server environment variable. For local development, set it in the root `.env` file, which is excluded from Git. The server connects to `smtp.ukr.net` on port 465 using TLS. The sender address comes from `GIRLYANDA_SMTP_USER` and defaults to `umt1@ukr.net`. [UKR.NET guide to creating an app password](https://wiki.ukr.net/GenerateAppSpecificPassword)
+For Resend, verify a sending domain such as `notify.girlyanda.net.ua` and create a key with sending access. Set `GIRLYANDA_RESEND_API_KEY` and `GIRLYANDA_RESEND_FROM` in the server environment. The sender address must belong to the verified domain, for example `no-reply@notify.girlyanda.net.ua`. On Render, add both values under Environment. Resend sends over HTTPS and takes precedence when its API key is configured. [Verify a Resend domain](https://resend.com/docs/add-a-domain) · [Manage Resend API keys](https://resend.com/docs/dashboard/api-keys/introduction)
+
+For SMTP, create a separate app password in your UKR.NET mail settings and save it in `GIRLYANDA_SMTP_PASSWORD`. The server connects to `smtp.ukr.net` on port 465 using TLS. The sender address comes from `GIRLYANDA_SMTP_USER` and defaults to `umt1@ukr.net`. For local development, set the mail variables in the root `.env` file, which is excluded from Git. [UKR.NET guide to creating an app password](https://wiki.ukr.net/GenerateAppSpecificPassword)
 
 ```sh
 npm run build

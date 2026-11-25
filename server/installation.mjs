@@ -8,6 +8,12 @@ const uploadLimit = photoLimit + 64 * 1024;
 const rateWindow = 10 * 60_000;
 
 export function installationMail(env = process.env) {
+  const resendKey = env.GIRLYANDA_RESEND_API_KEY?.trim();
+  if (resendKey) {
+    const from = env.GIRLYANDA_RESEND_FROM?.trim();
+    return from ? resendMail(resendKey, from) : undefined;
+  }
+
   const password = env.GIRLYANDA_SMTP_PASSWORD;
   if (!password) return undefined;
 
@@ -26,6 +32,29 @@ export function installationMail(env = process.env) {
   return async message => {
     const result = await transport.sendMail({...message, from: {name: 'Girlyanda', address: user}});
     if (!result.accepted.includes(recipient)) throw new Error('Recipient rejected');
+  };
+}
+
+function resendMail(apiKey, from) {
+  return async ({to, subject, text, attachments}) => {
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {Authorization: 'Bearer ' + apiKey, 'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        from: 'Girlyanda <' + from + '>',
+        to: [to],
+        subject,
+        text,
+        attachments: attachments.map(({filename, content}) => ({filename, content: content.toString('base64')})),
+      }),
+      signal: AbortSignal.timeout(20_000),
+    });
+    if (!response.ok) {
+      await response.body?.cancel();
+      throw Object.assign(new Error('Resend rejected the email'), {code: 'RESEND_HTTP_' + response.status});
+    }
+    const {id} = await response.json();
+    if (typeof id !== 'string' || !id) throw new Error('Resend did not return an email ID');
   };
 }
 
@@ -103,7 +132,7 @@ export function installationRoute(sendMail) {
         attachments,
       });
     } catch (error) {
-      console.error('Installation mail failed', error?.code ?? 'SMTP_ERROR');
+      console.error('Installation mail failed', error?.code ?? 'MAIL_ERROR');
       return res.sendStatus(502);
     }
     res.status(201).json({id});

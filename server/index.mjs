@@ -19,5 +19,5 @@ app.get('/{*path}', (req, res) => {
 
 app.listen(port, host, () => {
   console.log('Girlyanda: http://' + host + ':' + port);
-  if (!sendMail) console.log('Installation email is disabled until GIRLYANDA_SMTP_PASSWORD is configured.');
+  if (!sendMail) console.log('Installation email requires a Resend API key and sender address, or an SMTP password.');
 });
