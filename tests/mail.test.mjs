@@ -69,7 +69,7 @@ describe('Cloudflare order route', () => {
   it('sends the delivery details and cart lines to the store with a stable order number', async () => {
     const fetchEmail = vi.fn().mockImplementation(() => Response.json({id: 'email-id'}));
     vi.stubGlobal('fetch', fetchEmail);
-    const lines = [{sku: 'GY-P100-WW-WH', quantity: 2}, {sku: 'GY-S14-2-WW', quantity: 1}];
+    const lines = [{sku: 'GY-P100-WW-WH', quantity: 2, priceKopiykas: 1}, {sku: 'GY-S14-2-WW', quantity: 1}];
 
     for (let attempt = 0; attempt < 2; attempt++) {
       const response = await worker.fetch(orderRequest(lines), env);
@@ -80,13 +80,31 @@ describe('Cloudflare order route', () => {
     for (const [url, {headers, body}] of fetchEmail.mock.calls) {
       expect(url).toBe('https://api.resend.com/emails');
       expect(headers['Idempotency-Key']).toBe('order/' + requestId);
-      expect(JSON.parse(await body.text())).toMatchObject({
+      const email = JSON.parse(await body.text());
+      expect(email).toMatchObject({
         to: ['umt1@ukr.net'],
         subject: 'Girlyanda · Замовлення ABCDEF01',
-        text: 'Замовлення ABCDEF01\nІм’я: Тест\nТелефон: +380000000000\nМісто: Київ\n' +
-          'Відділення або адреса: Відділення № 1\n\nТовари:\nGY-P100-WW-WH × 2\nGY-S14-2-WW × 1',
         attachments: [],
       });
+      expect(email.text.replace(/[\u00a0\u202f]/g, ' ')).toBe([
+        'Замовлення ABCDEF01',
+        'Ім’я: Тест',
+        'Телефон: +380000000000',
+        'Місто: Київ',
+        'Відділення або адреса: Відділення № 1',
+        '',
+        'Товари:',
+        '1. Гірлянда-нитка 10 м (GY-P100-WW-WH)',
+        '   Кількість: 2 шт.',
+        '   Ціна за шт.: 1 893,41 грн',
+        '   Сума позиції: 3 786,82 грн',
+        '2. Ретрогірлянда Belt light S14 (GY-S14-2-WW)',
+        '   Кількість: 1 шт.',
+        '   Ціна за шт.: 1 900,00 грн',
+        '   Сума позиції: 1 900,00 грн',
+        '',
+        'Разом за товари: 5 686,82 грн',
+      ].join('\n'));
     }
     expect(fetchEmail).toHaveBeenCalledTimes(2);
   });
@@ -95,6 +113,8 @@ describe('Cloudflare order route', () => {
     {reason: 'an empty cart', lines: []},
     {reason: 'an excessive quantity', lines: [{sku: 'GY-P100-WW-WH', quantity: 100}]},
     {reason: 'a repeated SKU', lines: [{sku: 'GY-P100-WW-WH', quantity: 1}, {sku: 'GY-P100-WW-WH', quantity: 2}]},
+    {reason: 'an unknown SKU', lines: [{sku: 'GY-UNKNOWN', quantity: 1}]},
+    {reason: 'an unavailable SKU', lines: [{sku: 'GY-K090-WW-BK', quantity: 1}]},
   ])('rejects $reason before sending email', async ({lines}) => {
     const fetchEmail = vi.fn();
     vi.stubGlobal('fetch', fetchEmail);

@@ -1,4 +1,7 @@
 import { recipient, textField } from './submission-request.mjs';
+import { findCatalogVariant } from '../src/app/catalog/assortment.ts';
+import { priceLabel } from '../src/app/catalog/products.ts';
+import { lineTotalKopiykas, orderTotalKopiykas } from '../src/app/orders/order-pricing.ts';
 
 export const orderSubmission = {
   name: 'Order',
@@ -26,17 +29,28 @@ function orderMessage(data) {
   }
   if (!Array.isArray(lines) || !lines.length) return {status: 400};
 
-  const items = new Map();
+  const items = [];
+  const skus = new Set();
   for (const line of lines) {
     const {sku, quantity} = line ?? {};
-    if (typeof sku !== 'string' || sku.length > 64 || !/^GY-(?:[A-Z0-9]+-)*[A-Z0-9]+$/.test(sku) ||
-        !Number.isInteger(quantity) || quantity < 1 || quantity > 99 || items.has(sku)) {
+    if (typeof sku !== 'string' || !Number.isInteger(quantity) || quantity < 1 || quantity > 99 || skus.has(sku)) {
       return {status: 400};
     }
-    items.set(sku, quantity);
+    const listing = findCatalogVariant(sku);
+    if (!listing || listing.variant.availability === 'unavailable') return {status: 400};
+    const priceKopiykas = listing.variant.priceKopiykas;
+    items.push({
+      sku,
+      quantity,
+      name: listing.product.name,
+      priceKopiykas,
+      totalKopiykas: lineTotalKopiykas(priceKopiykas, quantity),
+    });
+    skus.add(sku);
   }
 
   const id = requestId.slice(0, 8).toUpperCase();
+  const total = orderTotalKopiykas(items);
   return {
     id,
     idempotencyKey: 'order/' + requestId,
@@ -51,7 +65,14 @@ function orderMessage(data) {
         'Відділення або адреса: ' + delivery,
         '',
         'Товари:',
-        ...Array.from(items, ([sku, quantity]) => sku + ' × ' + quantity),
+        ...items.map((item, index) => [
+          `${index + 1}. ${item.name} (${item.sku})`,
+          `   Кількість: ${item.quantity} шт.`,
+          `   Ціна за шт.: ${priceLabel(item.priceKopiykas)}`,
+          `   Сума позиції: ${item.totalKopiykas === null ? 'Уточнюється' : priceLabel(item.totalKopiykas)}`,
+        ].join('\n')),
+        '',
+        `Разом за товари: ${total === null ? 'Вартість уточнюється' : priceLabel(total)}`,
       ].join('\n'),
       attachments: [],
     },

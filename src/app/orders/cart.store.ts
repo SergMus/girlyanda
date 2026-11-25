@@ -1,5 +1,6 @@
 import { afterNextRender, computed, inject, Injectable, signal } from '@angular/core';
 import { CatalogRepository } from '../catalog/catalog.repository';
+import { lineTotalKopiykas, orderTotalKopiykas } from './order-pricing';
 
 export interface CartItem {
   readonly sku: string;
@@ -64,15 +65,15 @@ export class CartStore {
   private readonly items = signal<CartItem[]>([]);
   readonly lines = computed(() => this.items().flatMap(item => {
     const listing = this.catalog.findVariant(item.sku);
-    return listing ? [{...item, ...listing}] : [];
+    return listing ? [{
+      ...item,
+      ...listing,
+      totalKopiykas: lineTotalKopiykas(listing.variant.priceKopiykas, item.quantity),
+    }] : [];
   }));
   readonly count = computed(() => this.lines().reduce((count, line) => count + line.quantity, 0));
   readonly hasUnavailable = computed(() => this.lines().some(line => line.variant.availability === 'unavailable'));
-  readonly total = computed(() => {
-    const lines = this.lines();
-    if (lines.some(line => line.variant.priceKopiykas === null)) return null;
-    return lines.reduce((sum, line) => sum + line.quantity * (line.variant.priceKopiykas ?? 0), 0);
-  });
+  readonly total = computed(() => orderTotalKopiykas(this.lines()));
 
   constructor() {
     afterNextRender(() => {

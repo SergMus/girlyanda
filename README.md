@@ -32,7 +32,7 @@ npm run build
 
 The “Installation Request” form sends the message and an optional JPEG, PNG, or WebP photo of up to 10 MB to `umt1@ukr.net`. If the form cannot send the request, it offers to open a pre-filled email in the user’s mail app. The user can attach the photo manually.
 
-Checkout sends the customer’s contact and delivery details, item SKUs, and quantities to the same inbox. The checkout page removes the submitted quantities from the cart after the mail provider accepts the order email.
+Checkout sends the customer’s contact and delivery details and a numbered list of items with SKUs, quantities, unit prices, line totals, and the total for the goods. The server calculates prices from the same catalog used by the storefront. The checkout page removes the submitted quantities from the cart after the mail provider accepts the order email.
 
 For Resend, verify a sending domain such as `notify.girlyanda.net.ua` and create a key with sending access. Set `GIRLYANDA_RESEND_API_KEY` and `GIRLYANDA_RESEND_FROM` in the server environment. The sender address must belong to the verified domain, for example `no-reply@notify.girlyanda.net.ua`. On Render, add both values under Environment. Resend sends over HTTPS and takes precedence when its API key is configured. [Verify a Resend domain](https://resend.com/docs/add-a-domain) · [Manage Resend API keys](https://resend.com/docs/dashboard/api-keys/introduction)
 

@@ -1,4 +1,5 @@
-import { Glow, glowOptions, Product, ProductMedia, Variant, Wire } from './products';
+import { glowOptions } from './products.ts';
+import type { Glow, Product, ProductMedia, Variant, Wire } from './products.ts';
 
 type RubberWire = 'white' | 'black';
 
@@ -532,3 +533,11 @@ export const assortment: readonly Product[] = [
     ],
   },
 ];
+
+export function findCatalogVariant(sku: string, products = assortment) {
+  for (const product of [...products, ...archivedIcicles]) {
+    const variant = product.variants.find(item => item.sku === sku);
+    if (variant) return {product, variant};
+  }
+  return undefined;
+}

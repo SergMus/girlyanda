@@ -1,6 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { archivedIcicles, assortment, legacySnowflake } from './assortment';
-import { Variant } from './products';
+import { archivedIcicles, assortment, findCatalogVariant, legacySnowflake } from './assortment';
 
 @Injectable({providedIn: 'root'})
 export class CatalogRepository {
@@ -13,10 +12,6 @@ export class CatalogRepository {
   }
 
   findVariant(sku: string) {
-    for (const product of [...this.products(), ...archivedIcicles]) {
-      const variant: Variant | undefined = product.variants.find(item => item.sku === sku);
-      if (variant) return {product, variant};
-    }
-    return undefined;
+    return findCatalogVariant(sku, this.products());
   }
 }

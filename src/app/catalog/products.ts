@@ -57,10 +57,18 @@ export function selectVariant(product: Product, current: Variant, change: Partia
     !best || preference(variant) > preference(best) ? variant : best, undefined) ?? current;
 }
 
+const priceFormat = new Intl.NumberFormat('uk-UA', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
 export function priceLabel(value: number | null): string {
-  return value === null ? 'Ціна уточнюється' : new Intl.NumberFormat('uk-UA', {
-    style: 'currency', currency: 'UAH',
-  }).format(value / 100);
+  return value === null ? 'Ціна уточнюється' : priceFormat.format(value / 100) + '\u00a0грн';
+}
+
+export function variantLabel(variant: Variant): string {
+  return [
+    variant.glow && glowOptions[variant.glow].label,
+    variant.wire && wireOptions[variant.wire] + ' провід',
+    variant.size,
+  ].filter(Boolean).join(' · ');
 }
 
 export const availabilityLabels: Record<Availability, string> = {

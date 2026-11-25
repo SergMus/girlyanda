@@ -1,0 +1,93 @@
+<section class="wrap checkout">
+  <nav class="breadcrumbs" aria-label="Ваш шлях">
+    <a routerLink="/">Головна</a>
+    <a routerLink="/koshyk">Кошик</a>
+    <span aria-current="page">Оформлення</span>
+  </nav>
+  <h1>Оформлення замовлення</h1>
+
+  @if (receipt()) {
+    <div class="checkout-state" role="status">
+      <span class="receipt-mark" aria-hidden="true">✓</span>
+      <h2 #receiptHeading tabindex="-1">Замовлення {{ receipt() }} надіслано</h2>
+      <p>Ми зв’яжемося з вами, щоб підтвердити наявність і узгодити оплату та доставку.</p>
+      <a class="button primary" routerLink="/katalog">Повернутися до каталогу</a>
+    </div>
+  } @else if (cart.hasUnavailable()) {
+    <div class="checkout-state">
+      <h2>У кошику є недоступні товари</h2>
+      <p>Видаліть їх із кошика, щоб оформити замовлення.</p>
+      <a class="button primary" routerLink="/koshyk">Повернутися до кошика</a>
+    </div>
+  } @else if (cart.lines().length) {
+    <form class="checkout-form" (submit)="submit($event)">
+      <div class="checkout-details">
+        <fieldset>
+          <legend>Контактні дані</legend>
+          <div class="checkout-fields contact-fields">
+            <label>Ім’я <input name="name" required autocomplete="name" maxlength="80"></label>
+            <label>Телефон <input name="phone" required type="tel" autocomplete="tel" minlength="7" maxlength="25"></label>
+          </div>
+        </fieldset>
+        <fieldset>
+          <legend>Доставка</legend>
+          <div class="checkout-fields">
+            <label>Місто <input name="city" required autocomplete="address-level2" maxlength="100"></label>
+            <label>Відділення або адреса <input name="delivery" required autocomplete="street-address" maxlength="180" placeholder="Наприклад, Нова пошта № 12"></label>
+          </div>
+        </fieldset>
+      </div>
+
+      <aside class="checkout-summary" aria-labelledby="summary-heading">
+        <div class="summary-header">
+          <h2 id="summary-heading">Ваше замовлення</h2>
+          <a class="text-link" routerLink="/koshyk">Редагувати кошик</a>
+        </div>
+        <ol class="summary-items" role="list">
+          @for (line of cart.lines(); track line.sku) {
+            <li class="summary-item">
+              <span class="item-number" aria-hidden="true">{{ $index + 1 }}.</span>
+              @let photo = line.variant.gallery[0];
+              @if (photo && photo.kind !== 'reference') {
+                <img [src]="photo.file" alt="" width="64" height="64">
+              } @else {
+                <img [src]="'/media/' + line.product.category + '.svg'" alt="" width="64" height="64">
+              }
+              <div class="item-details">
+                <h3>{{ line.product.name }}</h3>
+                <p class="item-variant">{{ variantLabel(line.variant) }}</p>
+                <p class="item-sku">Артикул {{ line.sku }}</p>
+                <div class="item-amounts">
+                  @if (line.variant.priceKopiykas !== null) {
+                    <span>{{ line.quantity }} шт. × {{ priceLabel(line.variant.priceKopiykas) }}</span>
+                  } @else {
+                    <span>{{ line.quantity }} шт. · Ціна уточнюється</span>
+                  }
+                  <strong class="item-total"><span class="visually-hidden">Сума позиції </span>{{ line.totalKopiykas === null ? 'Уточнюється' : priceLabel(line.totalKopiykas) }}</strong>
+                </div>
+              </div>
+            </li>
+          }
+        </ol>
+        <div class="summary-totals">
+          <dl>
+            <div class="summary-count"><dt>Кількість товарів</dt><dd>{{ cart.count() }} шт.</dd></div>
+            <div class="summary-total"><dt>Разом за товари</dt><dd>{{ cart.total() === null ? 'Уточнюється' : priceLabel(cart.total()) }}</dd></div>
+          </dl>
+          <p>Вартість доставки узгодимо під час підтвердження.</p>
+        </div>
+      </aside>
+
+      <div class="checkout-actions">
+        @if (error()) { <p class="form-error" role="alert">{{ error() }}</p> }
+        <button class="button primary" type="submit" [disabled]="busy()">{{ busy() ? 'Надсилання…' : 'Надіслати замовлення' }}</button>
+        <p class="submit-note">Після надсилання зв’яжемося з вами для підтвердження.</p>
+      </div>
+    </form>
+  } @else {
+    <div class="checkout-state">
+      <h2>Ваш кошик порожній</h2>
+      <a class="button primary" routerLink="/katalog">До каталогу</a>
+    </div>
+  }
+</section>

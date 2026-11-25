@@ -1,0 +1,84 @@
+<section class="wrap cart-page">
+  <nav class="breadcrumbs" aria-label="Ваш шлях">
+    <a routerLink="/">Головна</a>
+    <span aria-current="page">Кошик</span>
+  </nav>
+
+  <header class="cart-heading">
+    <h1>Кошик</h1>
+    @if (cart.lines().length) {
+      <a class="cart-browse" routerLink="/katalog">
+        <gy-icon name="arrow-right"/>
+        Продовжити покупки
+      </a>
+    }
+  </header>
+
+  @if (cart.lines().length) {
+    <div class="cart-layout">
+      <ol class="cart-lines" role="list">
+        @for (line of cart.lines(); track line.sku) {
+          <li class="cart-line">
+            <span class="cart-line-number" aria-hidden="true">{{ $index + 1 }}</span>
+            <div class="cart-photo">
+              @let photo = line.variant.gallery[0];
+              @if (photo && photo.kind !== 'reference') {
+                <img [src]="photo.file" [alt]="photo.alt" width="128" height="128">
+              } @else {
+                <img [src]="'/media/' + line.product.category + '.svg'" alt="" width="128" height="128">
+              }
+            </div>
+
+            <div class="cart-line-details">
+              <h2><a [routerLink]="['/tovar', line.product.slug]" [queryParams]="{sku: line.sku}">{{ line.product.name }}</a></h2>
+              <p>{{ variantLabel(line.variant) }}</p>
+              <p class="cart-line-sku">Артикул {{ line.sku }}</p>
+              @if (line.variant.availability === 'unavailable') { <p class="cart-line-unavailable">Немає в наявності</p> }
+            </div>
+
+            <div class="cart-line-controls">
+              <div class="cart-line-edit">
+                <div class="cart-quantity" role="group" [attr.aria-label]="'Кількість: ' + line.product.name">
+                  <button type="button" [attr.aria-label]="'Зменшити кількість: ' + line.product.name" [disabled]="line.quantity === 1" (click)="cart.setQuantity(line.sku, line.quantity - 1)">−</button>
+                  <span>{{ line.quantity }}</span>
+                  <button type="button" [attr.aria-label]="'Збільшити кількість: ' + line.product.name" [disabled]="line.variant.availability === 'unavailable' || line.quantity === 99" (click)="cart.setQuantity(line.sku, line.quantity + 1)">+</button>
+                </div>
+                <button class="cart-remove text-link" type="button" (click)="cart.setQuantity(line.sku, 0)" [attr.aria-label]="'Видалити: ' + line.product.name">Видалити</button>
+              </div>
+              <div class="cart-line-prices">
+                <span>{{ line.variant.priceKopiykas === null ? 'Ціна уточнюється' : priceLabel(line.variant.priceKopiykas) + ' / шт.' }}</span>
+                <strong><span class="visually-hidden">Сума позиції </span>{{ line.totalKopiykas === null ? 'Уточнюється' : priceLabel(line.totalKopiykas) }}</strong>
+              </div>
+            </div>
+          </li>
+        }
+      </ol>
+
+      <aside class="cart-summary" aria-labelledby="cart-summary-heading">
+        <h2 id="cart-summary-heading">Підсумок замовлення</h2>
+        <dl class="cart-totals" aria-live="polite" aria-atomic="true">
+          <div class="cart-count"><dt>Кількість товарів</dt><dd>{{ cart.count() }} шт.</dd></div>
+          <div class="cart-total">
+            <dt>Разом за товари</dt>
+            <dd><strong>{{ cart.total() === null ? 'Уточнюється' : priceLabel(cart.total()) }}</strong></dd>
+          </div>
+        </dl>
+        @if (cart.hasUnavailable()) {
+          <p class="cart-blocked">Видаліть недоступні товари, щоб продовжити оформлення.</p>
+        } @else {
+          <p class="cart-delivery">Вартість доставки узгодимо під час підтвердження.</p>
+          <a class="button cart-checkout" routerLink="/zamovlennia">
+            Оформити замовлення
+            <gy-icon name="arrow-right"/>
+          </a>
+        }
+      </aside>
+    </div>
+  } @else {
+    <div class="cart-empty">
+      <span class="cart-empty-icon"><gy-icon name="bag"/></span>
+      <h2>Ваш кошик порожній</h2>
+      <a class="button primary" routerLink="/katalog">До каталогу <gy-icon name="arrow-right"/></a>
+    </div>
+  }
+</section>

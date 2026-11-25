@@ -183,11 +183,27 @@ test('фільтр, вибір артикула, медіа й надсилан�
   await page.getByRole('link', {name: 'Переглянути кошик'}).click();
   await expect(page).toHaveURL(/\/koshyk$/);
   await page.reload();
-  await expect(page.getByText('Кількість товарів: 1')).toBeVisible();
+  await expect(page.locator('.cart-count dd')).toHaveText('1 шт.');
   await page.getByRole('button', {name: /Збільшити кількість/}).click();
-  await expect(page.getByText('Кількість товарів: 2')).toBeVisible();
-  await expect(page.getByText(/^3\s786,82\s(?:грн|₴)$/)).toBeVisible();
+  await expect(page.locator('.cart-count dd')).toHaveText('2 шт.');
+  await expect(page.locator('.cart-total strong')).toHaveText(/^3\s786,82\s(?:грн|₴)$/);
+  const cartItem = page.locator('.cart-line').first();
+  await expect(cartItem.locator(':scope > .cart-line-number')).toHaveText('1');
+  await expect(cartItem.locator('.cart-line-prices')).toContainText(/1\s893,41\s(?:грн|₴)\s\/ шт\./);
+  await page.goto('/tovar/retro-s14?sku=GY-S14-2-WW');
+  await page.getByRole('button', {name: 'До кошика', exact: true}).click();
+  await page.getByRole('link', {name: 'Переглянути кошик'}).click();
+  await expect(page.locator('.cart-total strong')).toHaveText(/^5\s686,82\s(?:грн|₴)$/);
   await page.getByRole('link', {name: 'Оформити замовлення'}).click();
+  const summary = page.getByRole('complementary', {name: 'Ваше замовлення'});
+  const items = summary.getByRole('listitem');
+  await expect(items).toHaveCount(2);
+  await expect(items.first().locator('.item-number')).toHaveText('1.');
+  await expect(items.first()).toContainText(/2 шт\. × 1\s893,41\s(?:грн|₴)/);
+  await expect(items.first()).toContainText(/Сума позиції 3\s786,82\s(?:грн|₴)/);
+  await expect(items.last().locator('.item-number')).toHaveText('2.');
+  await expect(items.last()).toContainText(/1 шт\. × 1\s900,00\s(?:грн|₴)/);
+  await expect(summary.locator('.summary-total dd')).toHaveText(/^5\s686,82\s(?:грн|₴)$/);
   await page.getByLabel('Ім’я').fill('Тест');
   await page.getByLabel('Телефон').fill('+380000000000');
   await page.getByLabel('Місто').fill('Київ');
@@ -210,14 +226,19 @@ test('фільтр, вибір артикула, медіа й надсилан�
   const submit = page.getByRole('button', {name: 'Надіслати замовлення'});
   await submit.click();
   await expect(page.getByRole('alert')).toContainText('Надіслати замовлення не вдалося');
-  await expect(page.getByRole('link', {name: 'Кошик, товарів: 2'})).toBeVisible();
+  await expect(page.getByRole('link', {name: 'Кошик, товарів: 3'})).toBeVisible();
   await expect(page.getByLabel('Відділення або адреса')).toHaveValue('Тестове відділення');
 
   await submit.click();
-  await expect(page.getByRole('heading', {name: /^Замовлення [A-F0-9]{8} надіслано$/})).toBeVisible();
+  const receiptHeading = page.getByRole('heading', {name: /^Замовлення [A-F0-9]{8} надіслано$/});
+  await expect(receiptHeading).toBeVisible();
+  await expect(receiptHeading).toBeFocused();
   await expect(page.getByRole('link', {name: 'Кошик, товарів: 0'})).toBeVisible();
   expect(submissions).toHaveLength(2);
-  expect(submissions[0]).toMatchObject({lines: [{sku: 'GY-P100-WW-WH', quantity: 2}], delivery: 'Тестове відділення'});
+  expect(submissions[0]).toMatchObject({
+    lines: [{sku: 'GY-P100-WW-WH', quantity: 2}, {sku: 'GY-S14-2-WW', quantity: 1}],
+    delivery: 'Тестове відділення',
+  });
   expect(submissions[1]).toEqual(submissions[0]);
 });
 
