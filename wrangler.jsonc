@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "girlyanda",
+  "main": "server/cloudflare-worker.mjs",
+  "compatibility_date": "2026-11-11",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "keep_vars": true,
+  "assets": {
+    "directory": "./dist/girlyanda/browser",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api", "/api/*"]
+  },
+  "observability": {"enabled": true},
+  "ratelimits": [
+    {
+      "name": "INSTALLATION_LIMIT",
+      "namespace_id": "191137",
+      "simple": {"limit": 6, "period": 60}
+    }
+  ]
+}

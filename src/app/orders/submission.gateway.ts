@@ -33,7 +33,12 @@ export class SubmissionGateway {
     body.set('description', description);
     if (photo) body.set('photo', photo);
 
-    const response = await fetch('/api/installation', {method: 'POST', body, signal: AbortSignal.timeout(35_000)});
+    const response = await fetch('/api/installation', {
+      method: 'POST',
+      body,
+      headers: {Accept: 'application/json'},
+      signal: AbortSignal.timeout(120_000),
+    });
     if (!response.ok) throw new InstallationSubmissionError(response.status);
     const {id} = await response.json() as {id?: unknown};
     if (typeof id !== 'string' || !/^[A-F0-9]{8}$/.test(id)) throw new Error('Invalid installation receipt');
