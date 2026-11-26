@@ -166,7 +166,7 @@ test('вибрана схема товару повністю з’являєт�
 test('фільтр, вибір артикула, медіа й надсилання замовлення', async ({page}) => {
   await page.goto('/katalog');
   await page.getByLabel('Колір світіння', {exact: true}).selectOption('white');
-  await expect(page.getByRole('status')).toHaveText('Знайдено моделей: 6');
+  await expect(page.getByRole('status')).toHaveText('Знайдено моделей: 7');
   const card = page.locator('.product-card').filter({has: page.getByRole('heading', {name: 'Гірлянда нитка 10 м', exact: true})});
   const cardPrice = card.locator('.card-price');
   await expect(cardPrice).toHaveText(/^1\s893,41\s(?:грн|₴)$/);
