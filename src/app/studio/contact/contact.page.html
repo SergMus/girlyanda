@@ -1,0 +1,49 @@
+<div class="wrap page-space">
+  <nav class="breadcrumbs" aria-label="Ваш шлях">
+    <a routerLink="/">Головна</a><span aria-current="page">Контакти</span>
+  </nav>
+  <h1>Як вам зручно зв’язатися?</h1>
+
+  <div class="channels">
+    <section class="contact-channel" aria-labelledby="call-title">
+      <gy-icon name="phone" />
+      <h2 id="call-title">Зателефонувати</h2>
+      <div class="contact-links"><a class="text-link" [href]="phoneLink">+380 (50) 355-55-56</a></div>
+      <p>Багатоканальний номер для питань про гірлянди, замовлення й монтаж</p>
+    </section>
+    <section class="contact-channel" aria-labelledby="chat-title">
+      <gy-icon name="chat" />
+      <h2 id="chat-title">Написати в чат</h2>
+      <div class="contact-links">
+        <a class="text-link" [href]="viberLink">Viber</a>
+        <a class="text-link" [href]="whatsappLink" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        <a class="text-link" href="https://t.me/serg_mus" target="_blank" rel="noopener noreferrer">Telegram</a>
+      </div>
+      <p>Можна надіслати фото об’єкта</p>
+    </section>
+    <section class="contact-channel" aria-labelledby="email-title">
+      <gy-icon name="mail" />
+      <h2 id="email-title">Написати листа</h2>
+      <div class="contact-links"><a class="text-link" href="mailto:umt1@ukr.net">umt1&#64;ukr.net</a></div>
+      <p>З деталями або вкладеннями</p>
+    </section>
+  </div>
+
+  <section class="request" aria-labelledby="request-title">
+    <img
+      class="request-photo"
+      src="/media/contact-installation-banner.webp"
+      srcset="/media/contact-installation-banner-small.webp 660w, /media/contact-installation-banner.webp 1500w"
+      sizes="(min-width: 1408px) 854px, (min-width: 980px) calc(66.67vw - 5.34rem), (min-width: 860px) calc(66.67vw - 2.67rem), (min-width: 680px) calc(100vw - 4rem), calc(100vw - 2.5rem)"
+      width="1500"
+      height="500"
+      alt="Червоний трамвай у новорічних гірляндах і перехожа на засніженій вулиці"
+    />
+    <div class="request-copy">
+      <h2 id="request-title">Святкове оформлення під ключ</h2>
+      <a class="text-link" routerLink="/zaiavka">Заявка на монтаж <gy-icon name="arrow-right" /></a>
+    </div>
+  </section>
+
+  <p class="contact-area">Київ · Дистанційні консультації та виїзд на об’єкт</p>
+</div>

@@ -1,0 +1,117 @@
+<div class="wrap page-space">
+  <nav class="breadcrumbs" aria-label="Ваш шлях">
+    <a routerLink="/">Головна</a><span aria-current="page">Заявка на монтаж</span>
+  </nav>
+  <section class="contact-story" aria-labelledby="contact-story-title">
+    <div>
+      <h1 id="contact-story-title">Тепле світло для зимових вечорів</h1>
+      <p class="lead">
+        На зимовій вулиці погляд притягує повітряна куля з гірлянд. Біля вашого дому чи крамниці святкове оформлення теж
+        може початися з однієї деталі.
+      </p>
+    </div>
+    <img
+      class="contact-photo beveled"
+      src="/media/contact-light-installation.webp"
+      srcset="/media/contact-light-installation-small.webp 640w, /media/contact-light-installation.webp 1600w"
+      sizes="(min-width: 1408px) 778px, (min-width: 760px) 54vw, (min-width: 680px) calc(100vw - 4rem), calc(100vw - 2.5rem)"
+      width="1600"
+      height="900"
+      fetchpriority="high"
+      alt="Світлова фігура у формі повітряної кулі серед засніженої вулиці"
+    />
+  </section>
+  <div class="columns contact-body">
+    <section class="idea-section" aria-labelledby="contact-ideas-title">
+      <h2 id="contact-ideas-title">Що оформлюємо</h2>
+      <p>Оберіть ідею, щоб додати її до заявки.</p>
+      <div class="contact-ideas" role="group" aria-labelledby="contact-ideas-title">
+        @for (idea of ideas; track idea.icon) {
+          <button
+            type="button"
+            class="contact-idea"
+            aria-controls="installation-description"
+            [attr.aria-labelledby]="'idea-' + idea.icon"
+            [attr.aria-describedby]="'idea-detail-' + idea.icon"
+            (click)="addIdea(description, idea)"
+          >
+            <span class="idea-icon" aria-hidden="true"><gy-icon [name]="idea.icon" /></span>
+            <span class="idea-label" [id]="'idea-' + idea.icon">{{ idea.label }}</span>
+            <span class="idea-detail" [id]="'idea-detail-' + idea.icon">{{ idea.detail }}</span>
+          </button>
+        }
+      </div>
+    </section>
+    <form class="form-card" aria-labelledby="installation-form-title" (submit)="submit($event)">
+      <div class="form-intro">
+        <h2 id="installation-form-title">Заявка на монтаж</h2>
+        <p>
+          Опишіть свою ідею або доповніть підкреслені місця в підказці. Орієнтовних розмірів достатньо. За можливості
+          додайте фото й бажану дату.
+        </p>
+      </div>
+      <div class="form-grid">
+        <label>Ім’я <input name="name" autocomplete="name" required maxlength="80" /></label>
+        <label
+          >Телефон <input name="phone" type="tel" autocomplete="tel" required minlength="7" maxlength="25"
+        /></label>
+      </div>
+      <label
+        >Тип об’єкта
+        <select name="object" required>
+          <option value="">Оберіть об’єкт</option>
+          <option>Приватний будинок</option>
+          <option>Фасад</option>
+          <option>Тераса або альтанка</option>
+          <option>Ресторан чи інший бізнес</option>
+          <option>Інше</option>
+        </select>
+      </label>
+      <label
+        >Що потрібно підсвітити?
+        <textarea
+          #description
+          id="installation-description"
+          name="description"
+          rows="6"
+          required
+          maxlength="1600"
+          placeholder="Наприклад, тепла бахрома вздовж даху й гірлянди на двох деревах."
+        ></textarea>
+      </label>
+      <label class="upload-field">
+        <span><gy-icon name="upload" /> Додайте фото об’єкта</span>
+        <input #file type="file" accept="image/jpeg,image/png,image/webp" (change)="selectPhoto(file)" />
+        <small>JPEG, PNG, WebP до 10 МБ</small>
+      </label>
+
+      @if (preview(); as src) {
+        <figure class="attachment">
+          <img [src]="src" alt="Попередній перегляд фото об’єкта" width="144" height="94" />
+          <figcaption>
+            {{ photo()?.name }}
+            <button class="text-link" type="button" (click)="removePhoto(file)">Видалити</button>
+          </figcaption>
+        </figure>
+      }
+
+      @if (error()) {
+        <p class="form-error" role="alert">{{ error() }}</p>
+      }
+
+      @if (emailDraft(); as draft) {
+        <p class="contact-email">
+          <a class="text-link" [href]="draft">Відкрити підготовлений лист</a> і за потреби прикріпити фото в поштовому
+          застосунку.
+        </p>
+      }
+
+      @if (receipt()) {
+        <p class="notice" role="status">Заявку {{ receipt() }} надіслано. Ми зв’яжемося з вами за вказаним номером.</p>
+      }
+      <button type="submit" class="button gold" [disabled]="busy()" [attr.aria-busy]="busy()">
+        {{ busy() ? 'Надсилання…' : 'Надіслати заявку' }}
+      </button>
+    </form>
+  </div>
+</div>

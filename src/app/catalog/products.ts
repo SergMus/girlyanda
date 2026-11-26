@@ -1,18 +1,19 @@
-export const glowOptions = {
-  warm: {label: 'Теплий білий', swatch: '#dfab5a'},
-  cool: {label: 'Холодний білий', swatch: '#e5edf0'},
-  white: {label: 'Білий', swatch: '#f4f2df'},
-  orange: {label: 'Помаранчевий', swatch: '#e88531'},
-  red: {label: 'Червоний', swatch: '#d74645'},
-  yellow: {label: 'Жовтий', swatch: '#ebcc48'},
-  blue: {label: 'Синій', swatch: '#4f78d0'},
-  green: {label: 'Зелений', swatch: '#4d9b64'},
-  rgb: {label: 'Різнокольоровий (RGB)', swatch: 'conic-gradient(#d98266, #dfb549, #67a08b, #6e80cf, #d98266)'},
+export const GLOW_OPTIONS = {
+  warm: { label: 'Теплий білий', swatch: '#dfab5a' },
+  cool: { label: 'Холодний білий', swatch: '#e5edf0' },
+  white: { label: 'Білий', swatch: '#f4f2df' },
+  orange: { label: 'Помаранчевий', swatch: '#e88531' },
+  red: { label: 'Червоний', swatch: '#d74645' },
+  yellow: { label: 'Жовтий', swatch: '#ebcc48' },
+  blue: { label: 'Синій', swatch: '#4f78d0' },
+  green: { label: 'Зелений', swatch: '#4d9b64' },
+  rgb: { label: 'Різнокольоровий (RGB)', swatch: 'conic-gradient(#d98266, #dfb549, #67a08b, #6e80cf, #d98266)' },
 } as const;
 
-export const wireOptions = {white: 'Білий', black: 'Чорний', transparent: 'Прозорий'} as const;
-export type Glow = keyof typeof glowOptions;
-export type Wire = keyof typeof wireOptions;
+export const WIRE_OPTIONS = { white: 'Білий', black: 'Чорний', transparent: 'Прозорий' } as const;
+
+export type Glow = keyof typeof GLOW_OPTIONS;
+export type Wire = keyof typeof WIRE_OPTIONS;
 export type Availability = 'available' | 'unavailable' | 'unknown';
 
 export interface ProductMedia {
@@ -41,37 +42,50 @@ export interface Product {
   readonly subcategories: readonly string[];
   readonly description: string;
   readonly cover?: ProductMedia;
-  readonly specifications?: readonly {readonly label: string; readonly value: string}[];
+  readonly specifications?: readonly { readonly label: string; readonly value: string }[];
   readonly featured: boolean;
   readonly variants: readonly [Variant, ...Variant[]];
 }
 
-export function selectVariant(product: Product, current: Variant, change: Partial<Pick<Variant, 'glow' | 'wire' | 'size'>>): Variant {
+export function selectVariant(
+  product: Product,
+  current: Variant,
+  change: Partial<Pick<Variant, 'glow' | 'wire' | 'size'>>,
+): Variant {
   const compatible = product.variants.filter(variant =>
-    Object.entries(change).every(([key, value]) => variant[key as keyof typeof change] === value));
+    Object.entries(change).every(([key, value]) => variant[key as keyof typeof change] === value),
+  );
+
   const preference = (variant: Variant) =>
     Number(variant.glow === current.glow) * 4 +
     Number(variant.wire === current.wire) * 2 +
     Number(variant.size === current.size);
-  return compatible.reduce<Variant | undefined>((best, variant) =>
-    !best || preference(variant) > preference(best) ? variant : best, undefined) ?? current;
+
+  return (
+    compatible.reduce<Variant | undefined>(
+      (best, variant) => (!best || preference(variant) > preference(best) ? variant : best),
+      undefined,
+    ) ?? current
+  );
 }
 
-const priceFormat = new Intl.NumberFormat('uk-UA', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+const PRICE_FORMAT = new Intl.NumberFormat('uk-UA', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 export function priceLabel(value: number | null): string {
-  return value === null ? 'Ціна уточнюється' : priceFormat.format(value / 100) + '\u00a0грн';
+  return value === null ? 'Ціна уточнюється' : PRICE_FORMAT.format(value / 100) + '\u00a0грн';
 }
 
 export function variantLabel(variant: Variant): string {
   return [
-    variant.glow && glowOptions[variant.glow].label,
-    variant.wire && wireOptions[variant.wire] + ' провід',
+    variant.glow && GLOW_OPTIONS[variant.glow].label,
+    variant.wire && WIRE_OPTIONS[variant.wire] + ' провід',
     variant.size,
-  ].filter(Boolean).join(' · ');
+  ]
+    .filter(Boolean)
+    .join(' · ');
 }
 
-export const availabilityLabels: Record<Availability, string> = {
+export const AVAILABILITY_LABELS: Record<Availability, string> = {
   available: 'У наявності',
   unavailable: 'Немає в наявності',
   unknown: 'Наявність уточнюється',

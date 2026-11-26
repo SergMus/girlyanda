@@ -10,7 +10,8 @@
     "rewriteRelativeImportExtensions": true,
     "experimentalDecorators": true,
     "isolatedModules": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": ["node"]
   },
   "angularCompilerOptions": {
     "strictTemplates": true,

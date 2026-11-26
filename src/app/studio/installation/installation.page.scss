@@ -1,0 +1,15 @@
+:host {
+  display: block;
+}
+
+@media (min-width: 680px) {
+  .installation-photo {
+    grid-row: 1;
+    grid-column: 2;
+  }
+
+  .installation-process {
+    grid-row: 1;
+    grid-column: 1;
+  }
+}

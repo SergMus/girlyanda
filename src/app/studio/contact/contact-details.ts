@@ -1,0 +1,1 @@
+export const CONTACT_PHONE = '+380503555556';

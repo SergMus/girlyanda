@@ -1,0 +1,48 @@
+<div class="page-intro">
+  <div class="wrap">
+    <nav class="breadcrumbs" aria-label="Ваш шлях">
+      <a routerLink="/">Головна</a><span aria-current="page">Монтаж</span>
+    </nav>
+    <p class="eyebrow">Студія освітлення</p>
+    <h1>Монтаж святкової ілюмінації</h1>
+    <p class="lead">Оформлення будинків, фасадів, терас і комерційних просторів.</p>
+  </div>
+</div>
+<section class="wrap section-space columns">
+  <figure class="feature-figure installation-photo">
+    <img
+      class="beveled"
+      src="/media/installation-luminous.webp"
+      srcset="/media/installation-luminous-small.webp 600w, /media/installation-luminous.webp 1200w"
+      sizes="(min-width: 1440px) 600px, (min-width: 680px) 43vw, calc(100vw - 2.5rem)"
+      width="1200"
+      height="1200"
+      fetchpriority="high"
+      alt="Двоє майстрів завершують монтаж холодно-білої бахроми на другому поверсі. Біля входу дві ялинки, обвиті яскравими гірляндами."
+    />
+  </figure>
+  <div class="installation-process">
+    <h2>Від фото до освітленого фасаду</h2>
+    <ol class="process-list" role="list">
+      @for (step of process; track step.icon) {
+        <li>
+          <img [src]="'/media/' + step.icon + '.svg'" width="64" height="64" alt="" />
+          <div>
+            <h3>{{ step.title }}</h3>
+            <p>{{ step.description }}</p>
+          </div>
+        </li>
+      }
+    </ol>
+    <a class="button primary" routerLink="/zaiavka">Подати заявку з фото</a>
+  </div>
+</section>
+<section class="sand-section">
+  <div class="wrap section-space">
+    <div class="section-heading">
+      <h2>Світло в масштабі будинку</h2>
+      <p>Пересуньте повзунок, щоб порівняти зимовий фасад до та після монтажу.</p>
+    </div>
+    <gy-compare [images]="winterHouse" />
+  </div>
+</section>

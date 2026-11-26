@@ -1,0 +1,202 @@
+<section class="wrap page-space">
+  @if (product(); as item) {
+    <nav class="breadcrumbs" aria-label="Ваш шлях">
+      <a routerLink="/">Головна</a><a routerLink="/katalog">Каталог</a>
+
+      @if (category(); as section) {
+        <a [routerLink]="['/katalog', section.id]">{{ section.label }}</a>
+      }
+      <span aria-current="page">{{ item.name }}</span>
+    </nav>
+
+    @if (variant(); as selected) {
+      <div class="product-layout">
+        <div class="gallery">
+          @if (picture(); as photo) {
+            <div class="detail-image" #detailImage>
+              <img
+                [class.application-photo]="photo.kind === 'application'"
+                [src]="photo.file"
+                [alt]="photo.alt"
+                width="627"
+                height="627"
+                fetchpriority="high"
+              />
+
+              @if (photo.kind === 'reference') {
+                <span class="photo-label">Зразок макрозйомки</span>
+              }
+
+              @if (photo.kind === 'series') {
+                <span class="photo-label">Фото серії</span>
+              }
+            </div>
+          } @else {
+            <div class="missing-photo">
+              <img [src]="'/media/' + item.category + '.svg'" width="64" height="64" alt="" /><span
+                >Фото цього варіанта ще немає</span
+              >
+            </div>
+          }
+
+          @if (picture()?.kind === 'reference') {
+            <p class="media-note">
+              Зразок для порівняння теплого світіння на білому проводі. Фото цього артикула очікується.
+            </p>
+          }
+
+          @if (picture()?.kind === 'series') {
+            <p class="media-note">Фото серії. Деталі вибраної комплектації уточнюються.</p>
+          }
+
+          @if (picture()?.note; as note) {
+            <p class="media-note">{{ note }}</p>
+          }
+
+          @if (selected.gallery.length > 1) {
+            <div class="thumb-list" role="group" aria-label="Фотогалерея варіанта">
+              @for (photo of selected.gallery; track photo.file) {
+                <button
+                  type="button"
+                  [attr.aria-pressed]="picture() === photo"
+                  (click)="showPicture(photo)"
+                  [attr.aria-label]="photo.alt"
+                >
+                  <img
+                    [class.application-photo]="photo.kind === 'application'"
+                    [src]="photo.file"
+                    width="68"
+                    height="68"
+                    alt=""
+                  />
+                </button>
+              }
+            </div>
+          }
+        </div>
+        <div class="product-details">
+          <p class="eyebrow">{{ category()?.label }}</p>
+          <h1>{{ item.name }}</h1>
+          <p>{{ item.description }}</p>
+          <div class="variant-summary" aria-live="polite">
+            <strong>{{ priceLabel(selected.priceKopiykas) }}</strong>
+            <span>{{ availabilityLabels[selected.availability] }}</span>
+            <span>Артикул {{ selected.sku }}</span>
+          </div>
+
+          @if (selected.glow; as glow) {
+            <fieldset>
+              <legend>
+                Колір світіння
+
+                @if (variantOptions().glows.length > 1) {
+                  <strong>{{ glowOptions[glow].label }}</strong>
+                }
+              </legend>
+              <div class="variants">
+                @for (option of variantOptions().glows; track option) {
+                  <button
+                    type="button"
+                    class="variant-button"
+                    [attr.aria-pressed]="option === selected.glow"
+                    (click)="choose({ glow: option })"
+                  >
+                    <span class="swatch-dot" [style.--swatch]="glowOptions[option].swatch"></span>
+                    {{ glowOptions[option].label }}
+                  </button>
+                }
+              </div>
+            </fieldset>
+          }
+
+          @if (selected.wire) {
+            <fieldset>
+              <legend>Колір проводу</legend>
+              <div class="variants">
+                @for (wire of variantOptions().wires; track wire) {
+                  <button
+                    type="button"
+                    class="variant-button"
+                    [attr.aria-pressed]="wire === selected.wire"
+                    (click)="choose({ wire })"
+                  >
+                    {{ wireOptions[wire] }}
+                  </button>
+                }
+              </div>
+            </fieldset>
+          }
+
+          @if (selected.size) {
+            <fieldset>
+              <legend>Розмір</legend>
+              <div class="variants">
+                @for (size of variantOptions().sizes; track size) {
+                  <button
+                    type="button"
+                    class="variant-button"
+                    [attr.aria-pressed]="size === selected.size"
+                    (click)="choose({ size })"
+                  >
+                    {{ size }}
+                  </button>
+                }
+              </div>
+            </fieldset>
+          }
+          <div class="button-row buy">
+            <button
+              type="button"
+              class="button primary"
+              [disabled]="selected.availability === 'unavailable'"
+              (click)="add(selected)"
+            >
+              До кошика
+            </button>
+            <a class="text-link" routerLink="/koshyk">Переглянути кошик</a>
+          </div>
+          <p class="product-status" role="status">{{ status() }}</p>
+          <details class="info-row" [open]="!!item.specifications">
+            <summary>Характеристики</summary>
+            <dl>
+              @if (selected.glow; as glow) {
+                <dt>Світіння</dt>
+                <dd>{{ glowOptions[glow].label }}</dd>
+              }
+
+              @if (selected.wire; as wire) {
+                <dt>Провід</dt>
+                <dd>{{ wireOptions[wire] }}</dd>
+              }
+
+              @if (selected.size) {
+                <dt>Розмір</dt>
+                <dd>{{ selected.size }}</dd>
+              }
+
+              @if (selected.lampCount !== undefined) {
+                <dt>Кількість ламп</dt>
+                <dd>{{ selected.lampCount }} шт.</dd>
+              }
+              @for (specification of item.specifications ?? []; track specification.label) {
+                <dt>{{ specification.label }}</dt>
+                <dd>{{ specification.value }}</dd>
+              }
+            </dl>
+
+            @if (item.slug === 'kontur-114' || item.slug === 'promin-100') {
+              <a class="text-link" routerLink="/tovar/kabel-zhyvlennia-3a">Сумісний кабель живлення</a>
+            }
+          </details>
+          <details class="info-row">
+            <summary>Доставка й оплата</summary>
+            <p>Оплата й доставка наразі недоступні.</p>
+          </details>
+        </div>
+      </div>
+    }
+  } @else {
+    <h1>Товар не знайдено</h1>
+    <a class="button primary" routerLink="/katalog">До каталогу</a>
+  }
+</section>

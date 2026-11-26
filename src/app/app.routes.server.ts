@@ -1,17 +1,20 @@
 import { PrerenderFallback, RenderMode, ServerRoute } from '@angular/ssr';
-import { archivedIcicles, assortment, legacySnowflake } from './catalog/assortment';
-import { categories } from './catalog/categories';
-import { portfolioGalleries } from './studio/projects';
+import { ARCHIVED_ICICLES, ASSORTMENT, LEGACY_SNOWFLAKE } from './catalog/assortment';
+import { CATEGORIES } from './catalog/categories';
+import { PORTFOLIO_GALLERIES } from './studio/projects';
 
-export const serverRoutes: ServerRoute[] = [
+export const SERVER_ROUTES: ServerRoute[] = [
   {
     path: 'katalog/:category/:subcategory',
     renderMode: RenderMode.Prerender,
     fallback: PrerenderFallback.Client,
     async getPrerenderParams() {
-      return categories.flatMap(category => category.children.map(child => ({
-        category: category.id, subcategory: child.id,
-      })));
+      return CATEGORIES.flatMap(category =>
+        category.children.map(child => ({
+          category: category.id,
+          subcategory: child.id,
+        })),
+      );
     },
   },
   {
@@ -19,7 +22,7 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Prerender,
     fallback: PrerenderFallback.Client,
     async getPrerenderParams() {
-      return categories.map(category => ({category: category.id}));
+      return CATEGORIES.map(category => ({ category: category.id }));
     },
   },
   {
@@ -27,7 +30,7 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Prerender,
     fallback: PrerenderFallback.Client,
     async getPrerenderParams() {
-      return [...assortment, ...archivedIcicles, legacySnowflake].map(product => ({slug: product.slug}));
+      return [...ASSORTMENT, ...ARCHIVED_ICICLES, LEGACY_SNOWFLAKE].map(product => ({ slug: product.slug }));
     },
   },
   {
@@ -35,11 +38,12 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Prerender,
     fallback: PrerenderFallback.Client,
     async getPrerenderParams() {
-      return portfolioGalleries.map(gallery => ({category: gallery.id}));
+      return PORTFOLIO_GALLERIES.map(gallery => ({ category: gallery.id }));
     },
   },
   ...['', 'katalog', 'montazh', 'roboty', 'pro-nas', 'zaiavka', 'kontakty', 'koshyk', 'zamovlennia'].map(path => ({
-    path, renderMode: RenderMode.Prerender as const,
+    path,
+    renderMode: RenderMode.Prerender as const,
   })),
-  {path: '**', renderMode: RenderMode.Client},
+  { path: '**', renderMode: RenderMode.Client },
 ];

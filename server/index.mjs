@@ -1,26 +1,33 @@
 import { fileURLToPath } from 'node:url';
 import express from 'express';
-import { installationSubmission } from './installation-request.mjs';
+import { INSTALLATION_SUBMISSION } from './installation-request.mjs';
 import { configureMail, submissionRoute } from './mail.mjs';
-import { orderSubmission } from './order-request.mjs';
+import { ORDER_SUBMISSION } from './order-request.mjs';
 
-const app = express();
-const browser = fileURLToPath(new URL('../dist/girlyanda/browser/', import.meta.url));
-const sendMail = configureMail();
-const port = Number(process.env.GIRLYANDA_SERVER_PORT || 4300);
-const host = process.env.GIRLYANDA_SERVER_HOST || '127.0.0.1';
+const APP = express();
+const BROWSER = fileURLToPath(new URL('../dist/girlyanda/browser/', import.meta.url));
+const SEND_MAIL = configureMail();
+const PORT = Number(process.env.GIRLYANDA_SERVER_PORT || 4300);
+const HOST = process.env.GIRLYANDA_SERVER_HOST || '127.0.0.1';
 
-app.disable('x-powered-by');
-app.use('/api/installation', submissionRoute(sendMail, installationSubmission));
-app.use('/api/orders', submissionRoute(sendMail, orderSubmission));
-app.use('/api', (_req, res) => res.sendStatus(404));
-app.use(express.static(browser));
-app.get('/{*path}', (req, res) => {
-  if (!req.accepts('html')) return res.sendStatus(404);
-  res.sendFile('index.csr.html', {root: browser});
+APP.disable('x-powered-by');
+APP.use('/api/installation', submissionRoute(SEND_MAIL, INSTALLATION_SUBMISSION));
+APP.use('/api/orders', submissionRoute(SEND_MAIL, ORDER_SUBMISSION));
+APP.use('/api', (_req, res) => res.sendStatus(404));
+APP.use(express.static(BROWSER));
+
+APP.get('/{*path}', (req, res) => {
+  if (!req.accepts('html')) {
+    return res.sendStatus(404);
+  }
+
+  res.sendFile('index.csr.html', { root: BROWSER });
 });
 
-app.listen(port, host, () => {
-  console.log('Girlyanda: http://' + host + ':' + port);
-  if (!sendMail) console.log('Email requires a Resend API key and sender address, or an SMTP password.');
+APP.listen(PORT, HOST, () => {
+  console.log('Girlyanda: http://' + HOST + ':' + PORT);
+
+  if (!SEND_MAIL) {
+    console.log('Email requires a Resend API key and sender address, or an SMTP password.');
+  }
 });

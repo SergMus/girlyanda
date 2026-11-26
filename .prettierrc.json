@@ -1,0 +1,16 @@
+{
+  "singleQuote": true,
+  "bracketSpacing": true,
+  "arrowParens": "avoid",
+  "printWidth": 120,
+  "overrides": [
+    {
+      "files": "src/app/**/*.html",
+      "options": { "parser": "angular" }
+    },
+    {
+      "files": "wrangler.jsonc",
+      "options": { "trailingComma": "none" }
+    }
+  ]
+}

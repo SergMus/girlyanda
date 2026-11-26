@@ -1,28 +1,61 @@
 <a class="skip-link" href="#main">Перейти до вмісту</a>
 <header #header class="site-header" [class.over-hero]="home()" [class.panel-open]="panel()">
   <div class="wrap header-row">
-    <button type="button" class="icon-button menu-toggle" (click)="toggle('navigation', $event)"
-      [attr.aria-expanded]="panel() === 'navigation'" aria-controls="mobile-nav" aria-label="Меню">
-      <gy-icon [name]="panel() === 'navigation' ? 'close' : 'menu'"/>
+    <button
+      type="button"
+      class="icon-button menu-toggle"
+      (click)="toggle('navigation', $event)"
+      [attr.aria-expanded]="panel() === 'navigation'"
+      aria-controls="mobile-nav"
+      aria-label="Меню"
+    >
+      <gy-icon [name]="panel() === 'navigation' ? 'close' : 'menu'" />
     </button>
     <a class="brand" routerLink="/" aria-label="Girlyanda — головна">
-      <img [src]="home() && !panel() ? '/media/brand-logo-light.svg' : '/media/brand-logo.svg'" width="500" height="152" alt="">
+      <img
+        [src]="home() && !panel() ? '/media/brand-logo-light.svg' : '/media/brand-logo.svg'"
+        width="500"
+        height="152"
+        alt=""
+      />
     </a>
     <nav class="desktop-nav" aria-label="Основна навігація">
       @for (link of links; track link.url) {
         @if (link.url === '/katalog') {
-          <button class="nav-link" type="button" [attr.aria-expanded]="panel() === 'catalog'" aria-controls="mega-menu" (click)="toggle('catalog', $event)">
-            {{ link.label }} <gy-icon name="chevron"/>
+          <button
+            class="nav-link"
+            type="button"
+            [attr.aria-expanded]="panel() === 'catalog'"
+            aria-controls="mega-menu"
+            (click)="toggle('catalog', $event)"
+          >
+            {{ link.label }} <gy-icon name="chevron" />
           </button>
         } @else {
-          <a class="nav-link" [routerLink]="link.url" routerLinkActive="current" [routerLinkActiveOptions]="{exact: true}" ariaCurrentWhenActive="page">{{ link.label }}</a>
+          <a
+            class="nav-link"
+            [routerLink]="link.url"
+            routerLinkActive="current"
+            [routerLinkActiveOptions]="{ exact: true }"
+            ariaCurrentWhenActive="page"
+            >{{ link.label }}</a
+          >
         }
       }
     </nav>
     <div class="header-actions">
-      <button class="icon-button" type="button" (click)="toggle('search', $event)" [attr.aria-expanded]="panel() === 'search'" aria-controls="site-search" aria-label="Пошук товарів"><gy-icon [name]="panel() === 'search' ? 'close' : 'search'"/></button>
+      <button
+        class="icon-button"
+        type="button"
+        (click)="toggle('search', $event)"
+        [attr.aria-expanded]="panel() === 'search'"
+        aria-controls="site-search"
+        aria-label="Пошук товарів"
+      >
+        <gy-icon [name]="panel() === 'search' ? 'close' : 'search'" />
+      </button>
       <a class="icon-button bag-link" routerLink="/koshyk" [attr.aria-label]="'Кошик, товарів: ' + cart.count()">
-        <gy-icon name="bag"/>
+        <gy-icon name="bag" />
         <span class="count">{{ cart.count() }}</span>
       </a>
     </div>
@@ -34,9 +67,14 @@
         <div class="mega-categories" aria-label="Категорії">
           <a routerLink="/katalog" class="text-link" (click)="close()">Усі гірлянди</a>
           @for (category of categories; track category.id) {
-            <button type="button" [class.selected]="active().id === category.id" [attr.aria-pressed]="active().id === category.id"
-              (pointerenter)="active.set(category)" (click)="active.set(category)">
-              <img [src]="'/media/' + category.id + '.svg'" width="38" height="38" alt=""> {{ category.label }}
+            <button
+              type="button"
+              [class.selected]="active().id === category.id"
+              [attr.aria-pressed]="active().id === category.id"
+              (pointerenter)="active.set(category)"
+              (click)="active.set(category)"
+            >
+              <img [src]="'/media/' + category.id + '.svg'" width="38" height="38" alt="" /> {{ category.label }}
             </button>
           }
         </div>
@@ -48,7 +86,7 @@
           }
         </div>
         <figure class="mega-photo">
-          <img [src]="'/media/' + active().photo + '.webp'" alt="" width="390" height="280">
+          <img [src]="'/media/' + active().photo + '.webp'" alt="" width="390" height="280" />
         </figure>
       </div>
     </div>
@@ -64,7 +102,11 @@
               <a routerLink="/katalog" (click)="close()">Усі гірлянди</a>
               @for (category of categories; track category.id) {
                 <details class="mobile-category" [open]="expanded() === category.id">
-                  <summary (click)="$event.preventDefault(); expanded.set(expanded() === category.id ? null : category.id)"><img [src]="'/media/' + category.id + '.svg'" width="30" height="30" alt="">{{ category.label }}</summary>
+                  <summary
+                    (click)="$event.preventDefault(); expanded.set(expanded() === category.id ? null : category.id)"
+                  >
+                    <img [src]="'/media/' + category.id + '.svg'" width="30" height="30" alt="" />{{ category.label }}
+                  </summary>
                   <a [routerLink]="['/katalog', category.id]" (click)="close()">Уся категорія</a>
                   @for (child of category.children; track child.id) {
                     <a [routerLink]="['/katalog', category.id, child.id]" (click)="close()">{{ child.name }}</a>
@@ -73,8 +115,14 @@
               }
             </details>
           } @else {
-            <a [routerLink]="link.url" routerLinkActive="current" [routerLinkActiveOptions]="{exact: true}"
-              ariaCurrentWhenActive="page" (click)="close()">{{ link.label }}</a>
+            <a
+              [routerLink]="link.url"
+              routerLinkActive="current"
+              [routerLinkActiveOptions]="{ exact: true }"
+              ariaCurrentWhenActive="page"
+              (click)="close()"
+              >{{ link.label }}</a
+            >
           }
         }
       </div>
@@ -85,20 +133,20 @@
     <div class="header-panel" id="site-search">
       <form class="wrap header-search" role="search" (submit)="search($event, query.value)">
         <label class="visually-hidden" for="quick-search">Пошук у каталозі</label>
-        <input #query id="quick-search" type="search" placeholder="Шукати гірлянди" maxlength="100">
+        <input #query id="quick-search" type="search" placeholder="Шукати гірлянди" maxlength="100" />
         <button class="button primary" type="submit">Знайти</button>
       </form>
     </div>
   }
 </header>
-<main id="main" tabindex="-1"><router-outlet/></main>
+<main id="main" tabindex="-1"><router-outlet /></main>
 <footer class="site-footer">
   <div class="wrap footer-main">
     <div>
       <a class="brand" routerLink="/" aria-label="Girlyanda — головна">
-        <img src="/media/brand-logo-light.svg" width="500" height="152" alt="">
+        <img src="/media/brand-logo-light.svg" width="500" height="152" alt="" />
       </a>
-      <p>Гірлянди й професійний монтаж<br>святкового освітлення.</p>
+      <p>Гірлянди й професійний монтаж<br />святкового освітлення.</p>
     </div>
     <nav aria-label="Навігація в підвалі">
       <a routerLink="/katalog">Каталог</a><a routerLink="/montazh">Монтаж</a><a routerLink="/roboty">Наші роботи</a>

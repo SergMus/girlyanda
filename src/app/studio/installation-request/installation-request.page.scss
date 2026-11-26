@@ -1,0 +1,118 @@
+:host {
+  display: block;
+}
+
+.contact-story {
+  display: grid;
+  align-items: center;
+  gap: clamp(1.25rem, 4vw, 4rem);
+}
+
+.contact-story h1 {
+  font-size: clamp(2.45rem, 4.5vw, 4.4rem);
+  max-width: 14ch;
+}
+
+.contact-story p {
+  margin: 0.95rem 0 0;
+  max-width: 40ch;
+}
+
+.contact-photo {
+  width: 100%;
+  height: auto;
+}
+
+.contact-body {
+  margin-top: clamp(2rem, 5vw, 4rem);
+}
+
+.idea-section h2,
+.form-intro h2 {
+  font-size: clamp(1.65rem, 2.5vw, 2.25rem);
+}
+
+.idea-section > p {
+  margin: 0.55rem 0 1.2rem;
+  color: var(--muted);
+}
+
+.contact-ideas {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 3.3rem 0.65rem;
+  padding-top: 2.5rem;
+}
+
+.contact-idea {
+  --idea-surface: #fbf7ee;
+  --idea-padding: clamp(0.65rem, 2vw, 1.2rem);
+  position: relative;
+  display: grid;
+  align-content: start;
+  justify-items: start;
+  gap: 0.5rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  padding: clamp(2.65rem, 4vw, 3.3rem) var(--idea-padding) var(--idea-padding);
+  background: var(--idea-surface);
+  text-align: left;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.contact-idea:hover {
+  --idea-surface: var(--sand);
+  border-color: #a67c51;
+}
+
+.idea-icon {
+  position: absolute;
+  inset: 0 auto auto var(--idea-padding);
+  transform: translateY(-50%);
+  display: inline-grid;
+  place-items: center;
+  width: clamp(4.2rem, 6vw, 5rem);
+  aspect-ratio: 1;
+  border: 1px solid #ab8257;
+  border-radius: 50%;
+  background: var(--idea-surface);
+  box-shadow:
+    inset 0 0 0 2px var(--idea-surface),
+    inset 0 0 0 3px #e2cdb3;
+  color: var(--bronze);
+  font-size: clamp(2.4rem, 3.5vw, 2.85rem);
+}
+
+.idea-label {
+  font-family: var(--display), sans-serif;
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-weight: 700;
+  line-height: 1.2;
+  color: #263c2e;
+}
+
+.idea-detail {
+  font-size: 0.89rem;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.form-intro p {
+  margin: 0.55rem 0 0.25rem;
+}
+
+.form-intro p,
+.contact-email {
+  color: var(--muted);
+}
+
+.contact-email {
+  font-size: 0.89rem;
+}
+@media (min-width: 760px) {
+  .contact-story {
+    grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
+  }
+}

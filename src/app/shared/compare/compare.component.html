@@ -1,0 +1,32 @@
+<figure [style.--position.%]="position()">
+  <img
+    [src]="images().after.src"
+    [alt]="images().after.alt"
+    width="1200"
+    height="600"
+    loading="lazy"
+    decoding="async"
+  />
+  <img
+    class="before"
+    [src]="images().before.src"
+    [alt]="images().before.alt"
+    width="1200"
+    height="600"
+    loading="lazy"
+    decoding="async"
+  />
+  <span class="label before-label" aria-hidden="true">До</span>
+  <span class="label after-label" aria-hidden="true">Після</span>
+  <div class="divider" aria-hidden="true"><span>‹ ›</span></div>
+  <input
+    #slider
+    type="range"
+    min="0"
+    max="100"
+    [value]="position()"
+    aria-label="Порівняння до і після монтажу"
+    [attr.aria-valuetext]="'До: ' + position() + '%. Після: ' + (100 - position()) + '%.'"
+    (input)="position.set(slider.valueAsNumber)"
+  />
+</figure>

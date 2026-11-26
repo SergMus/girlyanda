@@ -1,0 +1,13 @@
+:host {
+  display: block;
+}
+
+:host(gy-icon) {
+  display: inline-flex;
+  flex: none;
+}
+
+svg {
+  width: 1.2em;
+  height: 1.2em;
+}

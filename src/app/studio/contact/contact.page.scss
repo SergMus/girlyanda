@@ -1,0 +1,115 @@
+:host {
+  display: block;
+}
+
+h1 {
+  margin-bottom: clamp(1.35rem, 3.3vw, 2.5rem);
+  font-size: clamp(2.15rem, 5.2vw, 4.5rem);
+}
+
+.channels {
+  display: grid;
+  gap: clamp(1.1rem, 3vw, 2rem);
+}
+
+.contact-channel {
+  min-width: 0;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--line);
+}
+
+.contact-channel > gy-icon {
+  margin-bottom: 0.4rem;
+  color: var(--bronze);
+  font-size: 1.15rem;
+}
+
+.contact-channel h2 {
+  font-size: clamp(1.35rem, 2.5vw, 2rem);
+}
+
+.contact-channel h2 {
+  text-wrap: wrap;
+}
+
+.contact-links {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 0.7rem;
+  margin-top: 0.35rem;
+}
+
+.contact-links .text-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.contact-channel p {
+  margin: 0.15rem 0 0;
+  color: var(--muted);
+}
+
+.request {
+  display: grid;
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+  overflow: hidden;
+  border-radius: 1.1rem;
+  background: radial-gradient(ellipse at 100% 0%, #344939, transparent 68%), #1c2a22;
+  color: var(--light);
+}
+
+.request-photo {
+  width: 100%;
+  height: auto;
+  align-self: center;
+}
+
+.request-copy {
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  gap: 0.35rem;
+  padding: clamp(1rem, 2.45vw, 2.6rem);
+}
+
+.request h2 {
+  max-width: 18ch;
+  font-size: clamp(1.45rem, 2.4vw, 2.25rem);
+  text-wrap: balance;
+}
+
+.request .text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 44px;
+  color: #f0ca91;
+}
+
+.request .text-link:hover {
+  color: var(--light);
+}
+
+.request .text-link:focus-visible {
+  outline-color: #f0ca91;
+}
+
+.contact-area {
+  margin: clamp(1.25rem, 3vw, 2.4rem) 0 0;
+  padding-top: clamp(0.85rem, 2vw, 1.3rem);
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+}
+@media (min-width: 760px) {
+  .channels {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr) minmax(0, 1fr);
+  }
+}
+@media (min-width: 860px) {
+  .request {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  }
+}

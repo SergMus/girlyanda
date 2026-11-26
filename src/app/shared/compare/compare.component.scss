@@ -1,0 +1,114 @@
+:host {
+  display: block;
+}
+
+figure {
+  --position: 50%;
+  position: relative;
+  margin: 0;
+  overflow: hidden;
+  isolation: isolate;
+  aspect-ratio: 4/3;
+  background: var(--dark);
+}
+
+img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.before {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(0 calc(100% - var(--position)) 0 0);
+}
+
+.divider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  left: var(--position);
+  background: #fff;
+}
+
+.divider span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: var(--paper);
+  color: var(--ink);
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.label {
+  position: absolute;
+  bottom: 0.8rem;
+  color: #fff;
+  background: #14140fdd;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.83rem;
+}
+
+.before-label {
+  left: 0.8rem;
+}
+
+.after-label {
+  right: 0.8rem;
+}
+
+input {
+  appearance: none;
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: ew-resize;
+}
+
+input::-webkit-slider-thumb {
+  appearance: none;
+  width: 1px;
+  height: 100%;
+}
+
+input::-moz-range-thumb {
+  border: 0;
+  width: 1px;
+  height: 100%;
+}
+
+figure:focus-within {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
+}
+@media (width < 650px) {
+  :host(.wide-mobile) figure {
+    aspect-ratio: 17/10;
+  }
+
+  :host(.wide-mobile) img {
+    object-position: 92% center;
+  }
+
+  :host(.wide-mobile) .label {
+    top: 0.8rem;
+    bottom: auto;
+  }
+}
+@media (min-width: 650px) {
+  figure {
+    aspect-ratio: 2/1;
+  }
+}
