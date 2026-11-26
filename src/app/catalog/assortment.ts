@@ -16,7 +16,7 @@ function usdToKopiykas(usd: number): number {
 function variant(
   sku: string, glow: Glow | null, wire: Wire | null, size: string, priceKopiykas: number, ...gallery: ProductMedia[]
 ): Variant {
-  return {sku, glow, wire, size, gallery, priceKopiykas, availability: 'unknown'};
+  return {sku, glow, wire, size, gallery, priceKopiykas, availability: 'available'};
 }
 
 function connectorPhotos(wire: RubberWire): readonly ProductMedia[] {
@@ -349,29 +349,24 @@ export const legacySnowflake: Product = {
   variants: [snowflake40Cool.variants[0], snowflake60Cool.variants[0]],
 };
 
-function unavailable([first, ...rest]: Product['variants']): Product['variants'] {
-  const mark = (item: Variant): Variant => ({...item, availability: 'unavailable'});
-  return [mark(first), ...rest.map(mark)];
-}
-
 // Retain the exact products referenced by existing carts and direct product links.
 export const archivedIcicles: readonly Product[] = [
   {
     slug: 'kontur-114', name: 'Гірлянда-бахрома «Контур 114»',
     category: 'bakhroma', subcategories: ['vulychni'], featured: false,
     description: 'Для карнизів і балконів. Дві секції по 1,5 м, статичне світіння, IP65. Кабель живлення купується окремо.',
-    variants: unavailable(miniLedVariants('kontur-114', 'GY-K114', '3 × 0,5 м')),
+    variants: miniLedVariants('kontur-114', 'GY-K114', '3 × 0,5 м'),
   },
   {
     slug: 'kontur-90', name: 'Гірлянда-бахрома «Контур 90»',
     category: 'bakhroma', subcategories: ['vulychni'], featured: false,
     cover: icicleWarm, description: 'Компактна бахрома 2 × 0,5 м зі статичним світінням для коротких карнизів і вхідних груп.',
-    variants: unavailable([
+    variants: [
       variant('GY-K090-WW-BK', 'warm', 'black', '2 × 0,5 м', 93_000, icicleWarm),
       variant('GY-K090-CW-BK', 'cool', 'black', '2 × 0,5 м', 93_000, icicleCool),
       variant('GY-K090-WW-WH', 'warm', 'white', '2 × 0,5 м', 93_000, icicleWarm),
       variant('GY-K090-CW-WH', 'cool', 'white', '2 × 0,5 м', 93_000, icicleCool),
-    ]),
+    ],
   },
 ];
 

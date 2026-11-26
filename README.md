@@ -26,7 +26,7 @@ npm run build
 - `src/app/catalog` contains categories, types, the product assortment, variant galleries, search, filtering, and sorting. `CatalogRepository` provides the integration point for an API. The product model defines valid combinations of light color, wire color, and size. Each variant has a price in kopiykas, an availability status, and a gallery.
 - `src/app/orders` contains the SKU-based cart and checkout. Selected variants are stored in `localStorage`. `SubmissionGateway` submits orders to `POST /api/orders` and installation requests with photos to `POST /api/installation`.
 - `src/app/studio` contains the installation, portfolio, and studio information pages, along with the installation request form. `src/app/shared` contains shared icons and the before-and-after comparison component. The catalog and installation SVG illustrations are in `public/media`. The homepage cards link to three galleries at `/roboty/:category`. Project names, optional locations, and photos are defined in `src/app/studio/projects.ts`. Photos for the “Ideas for Your Space” section are defined in `src/app/home/home.page.ts`.
-- Prices and availability remain unspecified until retail pricing is agreed on and an inventory source is confirmed. Add the studio’s actual contact information, history, and team details once that information is available.
+- The catalog defines retail prices and marks all product variants as in stock. Add the studio’s actual contact information, history, and team details once that information is available.
 
 ## Sending orders and installation requests
 

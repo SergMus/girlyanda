@@ -179,6 +179,7 @@ test('фільтр, вибір артикула, медіа й надсилан�
   await expect(price).toHaveText(/^1\s893,41\s(?:грн|₴)$/);
   await expect(page.locator('.detail-image img')).toHaveAttribute('src', /promin-100-warm-white\.webp$/);
   await expect(page.getByText('Артикул GY-P100-WW-WH')).toBeVisible();
+  await expect(page.getByText('У наявності', {exact: true})).toBeVisible();
   await page.getByRole('button', {name: 'До кошика', exact: true}).click();
   await page.getByRole('link', {name: 'Переглянути кошик'}).click();
   await expect(page).toHaveURL(/\/koshyk$/);

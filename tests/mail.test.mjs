@@ -114,7 +114,6 @@ describe('Cloudflare order route', () => {
     {reason: 'an excessive quantity', lines: [{sku: 'GY-P100-WW-WH', quantity: 100}]},
     {reason: 'a repeated SKU', lines: [{sku: 'GY-P100-WW-WH', quantity: 1}, {sku: 'GY-P100-WW-WH', quantity: 2}]},
     {reason: 'an unknown SKU', lines: [{sku: 'GY-UNKNOWN', quantity: 1}]},
-    {reason: 'an unavailable SKU', lines: [{sku: 'GY-K090-WW-BK', quantity: 1}]},
   ])('rejects $reason before sending email', async ({lines}) => {
     const fetchEmail = vi.fn();
     vi.stubGlobal('fetch', fetchEmail);
@@ -123,6 +122,16 @@ describe('Cloudflare order route', () => {
 
     expect(response.status).toBe(400);
     expect(fetchEmail).not.toHaveBeenCalled();
+  });
+
+  it('accepts an order for a SKU from an older saved cart', async () => {
+    const fetchEmail = vi.fn().mockResolvedValue(Response.json({id: 'email-id'}));
+    vi.stubGlobal('fetch', fetchEmail);
+
+    const response = await worker.fetch(orderRequest([{sku: 'GY-K090-WW-BK', quantity: 1}]), env);
+
+    expect(response.status).toBe(201);
+    expect(fetchEmail).toHaveBeenCalledTimes(1);
   });
 });
 

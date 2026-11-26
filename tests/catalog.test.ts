@@ -1,6 +1,6 @@
 import { existsSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import { archivedIcicles, assortment } from '../src/app/catalog/assortment';
+import { archivedIcicles, assortment, legacySnowflake } from '../src/app/catalog/assortment';
 import { categories } from '../src/app/catalog/categories';
 import { parseCart } from '../src/app/orders/cart.store';
 import { priceLabel, selectVariant } from '../src/app/catalog/products';
@@ -88,6 +88,12 @@ describe('Стартовий асортимент', () => {
     const missingPrices = variants.filter(({priceKopiykas}) =>
       priceKopiykas === null || !Number.isInteger(priceKopiykas) || priceKopiykas <= 0);
     expect(missingPrices.map(({sku}) => sku)).toEqual([]);
+  });
+
+  it('позначає всі варіанти на сторінках товарів як наявні', () => {
+    const products = [...assortment, ...archivedIcicles, legacySnowflake];
+    const notAvailable = products.flatMap(product => product.variants.filter(variant => variant.availability !== 'available'));
+    expect(notAvailable.map(({sku}) => sku)).toEqual([]);
   });
 
   it('має локальні файли галереї для всіх 20 варіантів вуличної нитки', () => {
