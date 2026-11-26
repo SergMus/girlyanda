@@ -16,10 +16,10 @@ const outdoors = {id: 'vulychni', name: 'Вуличні'};
 const indoors = {id: 'interierni', name: 'Інтер’єрні'};
 
 export const categories: readonly Category[] = [
-  {id: 'bakhroma', label: 'Бахрома', name: 'Гірлянди-бахрома', children: [outdoors], photo: 'products/bakhroma-150-warm-white'},
-  {id: 'nytka', label: 'Нитка', name: 'Гірлянди-нитки', children: [outdoors, indoors], photo: 'products/promin-100-warm-black'},
-  {id: 'shtora', label: 'Штора', name: 'Гірлянди-штори', children: [outdoors, indoors], photo: 'products/zavisa-456-warm'},
-  {id: 'sitka', label: 'Сітка', name: 'Гірлянди-сітки', children: [outdoors, indoors], photo: 'products/sitka-288-studio'},
+  {id: 'bakhroma', label: 'Бахрома', name: 'Гірлянди бахрома', children: [outdoors], photo: 'products/bakhroma-150-warm-white'},
+  {id: 'nytka', label: 'Нитка', name: 'Гірлянди нитки', children: [outdoors, indoors], photo: 'products/promin-100-warm-black'},
+  {id: 'shtora', label: 'Штора', name: 'Гірлянди штори', children: [outdoors, indoors], photo: 'products/zavisa-456-warm'},
+  {id: 'sitka', label: 'Сітка', name: 'Гірлянди сітки', children: [outdoors, indoors], photo: 'products/sitka-288-studio'},
   {id: 'kulky', label: 'Кульки', name: 'Гірлянди з кульками', children: [outdoors, indoors], photo: 'products/sfera-20-warm'},
   {
     id: 'padayuchyi-snih', label: 'Падаючий сніг', name: 'Гірлянди «Падаючий сніг»',

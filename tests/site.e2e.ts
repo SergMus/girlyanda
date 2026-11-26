@@ -45,10 +45,10 @@ test('головна, вкладене меню та клавіатурне по
   }
   await expect(page).toHaveURL(/\/katalog\/bakhroma\/vulychni$/);
   await expect(logo).toHaveAttribute('src', '/media/brand-logo.svg');
-  await expect(page.getByRole('heading', {name: 'Гірлянди-бахрома', exact: true})).toBeVisible();
+  await expect(page.getByRole('heading', {name: 'Гірлянди бахрома', exact: true})).toBeVisible();
   const fringe = page.locator('.catalog-grid');
-  await expect(fringe.getByRole('heading', {name: 'Гірлянда-бахрома 3 × 0,5 м', exact: true})).toBeVisible();
-  await expect(fringe.getByRole('heading', {name: 'Гірлянда-бахрома 3 × 0,5 м з мерехтінням', exact: true})).toBeVisible();
+  await expect(fringe.getByRole('heading', {name: 'Гірлянда бахрома 3 × 0,5 м', exact: true})).toBeVisible();
+  await expect(fringe.getByRole('heading', {name: 'Гірлянда бахрома 3 × 0,5 м з мерехтінням', exact: true})).toBeVisible();
   await expect(page.getByRole('status')).toHaveText('Знайдено моделей: 2');
   await expect(page.locator('a[href="/katalog/bakhroma/interierni"]')).toHaveCount(0);
   expect(errors).toEqual([]);
@@ -155,7 +155,7 @@ test('фільтр, вибір артикула, медіа й надсилан�
   await page.goto('/katalog');
   await page.getByLabel('Колір світіння', {exact: true}).selectOption('white');
   await expect(page.getByRole('status')).toHaveText('Знайдено моделей: 6');
-  const card = page.locator('.product-card').filter({has: page.getByRole('heading', {name: 'Гірлянда-нитка 10 м', exact: true})});
+  const card = page.locator('.product-card').filter({has: page.getByRole('heading', {name: 'Гірлянда нитка 10 м', exact: true})});
   const cardPrice = card.locator('.card-price');
   await expect(cardPrice).toHaveText(/^1\s893,41\s(?:грн|₴)$/);
   await card.getByRole('button', {name: 'Різнокольоровий (RGB)', exact: true}).click();

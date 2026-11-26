@@ -42,8 +42,8 @@ function miniLedVariants(model: string, prefix: string, size: string): Product['
   ];
 }
 
-const icicleWarm = media('kontur-90-warm', 'Гірлянда-бахрома, тепле біле світіння');
-const icicleCool = media('kontur-90-cool', 'Гірлянда-бахрома, холодне біле світіння');
+const icicleWarm = media('kontur-90-warm', 'Гірлянда бахрома, тепле біле світіння');
+const icicleCool = media('kontur-90-cool', 'Гірлянда бахрома, холодне біле світіння');
 const snowfallPhoto = media('snowfall-50', 'Фрагмент гірлянди Snowfall з прозорими підвісами 50 см і білими світлодіодами', 'illustration');
 const meteorPhoto = media('meteor-30', 'Фрагмент гірлянди Meteor з прозорими підвісами 30 см і білими світлодіодами', 'illustration');
 function snowfallApplication(image: string, alt: string): ProductMedia {
@@ -68,7 +68,7 @@ const longSnowfallSpecifications = [
   {label: 'Довжина підвісу', value: '50 см'},
   {label: 'Контролер', value: 'Так'},
 ];
-const curtainWarm = media('zavisa-456-warm', 'Тепло-біла гірлянда-штора на білому проводі', 'variant');
+const curtainWarm = media('zavisa-456-warm', 'Тепло-біла гірлянда штора на білому проводі', 'variant');
 const galaxyWarm = media('sfera-20-warm', 'Прозора куля з теплим білим світінням');
 const galaxyCool = media('sfera-20-cool', 'Прозора куля з холодним білим світінням');
 const net: ProductMedia = {
@@ -76,7 +76,7 @@ const net: ProductMedia = {
   note: 'Ілюстрація сітки.',
 };
 const netGarden: ProductMedia = {
-  ...media('sitka-288-garden', 'Біла гірлянда-сітка на кущі', 'application'),
+  ...media('sitka-288-garden', 'Біла гірлянда сітка на кущі', 'application'),
   note: 'Ілюстрація використання.',
 };
 const netDiagram = media('sitka-288-diagram', 'Схема сітки 2 × 1,5 м', 'application');
@@ -180,27 +180,27 @@ const strandGlows = [
 ] as const;
 
 const strandWarmFlashApplications = [
-  media('promin-100-installation-warm-flash', 'Тепло-білі гірлянди-нитки з холодно-білими спалахами на фасаді торгового центру', 'application'),
-  media('promin-100-installation-fir-flash', 'Тепло-білі гірлянди-нитки з холодно-білими спалахами на засніженій ялинці', 'application'),
+  media('promin-100-installation-warm-flash', 'Тепло-білі гірлянди нитки з холодно-білими спалахами на фасаді торгового центру', 'application'),
+  media('promin-100-installation-fir-flash', 'Тепло-білі гірлянди нитки з холодно-білими спалахами на засніженій ялинці', 'application'),
 ];
 
 const strandApplications: Partial<Record<Glow, readonly ProductMedia[]>> = {
   warm: [
     {
       file: '/media/tree-path.webp',
-      alt: 'Тепло-білі гірлянди-нитки на стовбурах і гілках дерев уздовж садової доріжки',
+      alt: 'Тепло-білі гірлянди нитки на стовбурах і гілках дерев уздовж садової доріжки',
       kind: 'application',
     },
-    media('promin-100-installation-fir', 'Тепло-біла гірлянда-нитка на засніженій ялинці', 'application'),
+    media('promin-100-installation-fir', 'Тепло-біла гірлянда нитка на засніженій ялинці', 'application'),
   ],
   white: [
-    media('promin-100-installation-facade', 'Холодно-білі гірлянди-нитки на стовбурі та гілках дерева біля будинку', 'application'),
+    media('promin-100-installation-facade', 'Холодно-білі гірлянди нитки на стовбурі та гілках дерева біля будинку', 'application'),
   ],
 };
 
 const strandColorApplication: ProductMedia = {
   file: '/media/color-alley.webp',
-  alt: 'Садова алея з деревами, підсвіченими гірляндами-нитками різних кольорів',
+  alt: 'Садова алея з деревами, підсвіченими гірляндами нитками різних кольорів',
   kind: 'application',
 };
 
@@ -209,7 +209,7 @@ function strandVariant({glow, code}: typeof strandGlows[number], wire: RubberWir
   const label = glowOptions[glow].label;
   const mode = flashing ? '-flash' : '';
   const file = 'promin-100-' + glow + '-' + wire + mode;
-  const alt = 'Гірлянда-нитка на ' + cable + ' каучуковому проводі. ' + label;
+  const alt = 'Гірлянда нитка на ' + cable + ' каучуковому проводі. ' + label;
   const photo = media(file, flashing ? alt + ' з холодно-білим мерехтінням' : alt, 'variant');
   const detail = media('promin-100-detail-' + wire, 'Вимкнені світлодіоди на ' + cable + ' проводі', 'variant');
   const applications = flashing && glow === 'warm'
@@ -274,7 +274,7 @@ function curtainVariants(
     const wireCode = wire === 'white' ? 'WH' : 'BK';
     const photo = glow === 'warm' && wire === 'white' ? curtainWarm : media(
       'zavisa-456-' + glow + '-' + wire,
-      'Гірлянда-штора на ' + cable + ' проводі. Колір світіння — ' + glowOptions[glow].label.toLowerCase(),
+      'Гірлянда штора на ' + cable + ' проводі. Колір світіння — ' + glowOptions[glow].label.toLowerCase(),
       'variant',
     );
     const details = [...(supportingPhotos[glow] ?? []), ...curtainDetails].map(photos => photos[wire]);
@@ -290,15 +290,15 @@ function curtainVariants(
 function curtainModel(ledCount: number, size: string, drops: number, price: number, locations: string): Product {
   const slug = 'zavisa-' + ledCount;
   const installations = {
-    warm: curtainWirePhotos(slug + '-installation-warm', 'Тепло-біла гірлянда-штора ' + size + ' на вітрині', 'white', 'application'),
-    cool: curtainWirePhotos(slug + '-installation-cool', 'Холодно-біла гірлянда-штора ' + size + ' на вітрині', 'white', 'application'),
+    warm: curtainWirePhotos(slug + '-installation-warm', 'Тепло-біла гірлянда штора ' + size + ' на вітрині', 'white', 'application'),
+    cool: curtainWirePhotos(slug + '-installation-cool', 'Холодно-біла гірлянда штора ' + size + ' на вітрині', 'white', 'application'),
   };
   return {
     slug,
-    name: 'Гірлянда-штора ' + size.replace(' × ', 'х'),
+    name: 'Гірлянда штора ' + size.replace(' × ', 'х'),
     category: 'shtora', subcategories: ['vulychni'], featured: false,
     cover: installations.warm.white,
-    description: 'Вулична гірлянда-штора для ' + locations + '. Вертикальні нитки однакової довжини утворюють рівний нижній край.',
+    description: 'Вулична гірлянда штора для ' + locations + '. Вертикальні нитки однакової довжини утворюють рівний нижній край.',
     specifications: [
       {label: 'Застосування', value: 'Вуличне'},
       {label: 'Джерело світла', value: 'Світлодіоди (LED)'},
@@ -354,13 +354,13 @@ export const legacySnowflake: Product = {
 // Retain the exact products referenced by existing carts and direct product links.
 export const archivedIcicles: readonly Product[] = [
   {
-    slug: 'kontur-114', name: 'Гірлянда-бахрома «Контур 114»',
+    slug: 'kontur-114', name: 'Гірлянда бахрома «Контур 114»',
     category: 'bakhroma', subcategories: ['vulychni'], featured: false,
     description: 'Для карнизів і балконів. Дві секції по 1,5 м, статичне світіння, IP65. Кабель живлення купується окремо.',
     variants: miniLedVariants('kontur-114', 'GY-K114', '3 × 0,5 м'),
   },
   {
-    slug: 'kontur-90', name: 'Гірлянда-бахрома «Контур 90»',
+    slug: 'kontur-90', name: 'Гірлянда бахрома «Контур 90»',
     category: 'bakhroma', subcategories: ['vulychni'], featured: false,
     cover: icicleWarm, description: 'Компактна бахрома 2 × 0,5 м зі статичним світінням для коротких карнизів і вхідних груп.',
     variants: [
@@ -374,14 +374,14 @@ export const archivedIcicles: readonly Product[] = [
 
 export const assortment: readonly Product[] = [
   {
-    slug: 'bakhroma-150', name: 'Гірлянда-бахрома ' + icicleSize,
+    slug: 'bakhroma-150', name: 'Гірлянда бахрома ' + icicleSize,
     category: 'bakhroma', subcategories: ['vulychni'], featured: true,
     description: 'Вулична бахрома зі 150 світлодіодами для карнизів, фасадів і входів. Стале світіння, білий або чорний каучуковий провід.',
     specifications: [...icicleSpecifications, {label: 'Режим світіння', value: 'Стале світіння'}],
     variants: icicleVariants(false),
   },
   {
-    slug: 'bakhroma-150-merekhtinnia', name: 'Гірлянда-бахрома ' + icicleSize + ' з мерехтінням',
+    slug: 'bakhroma-150-merekhtinnia', name: 'Гірлянда бахрома ' + icicleSize + ' з мерехтінням',
     category: 'bakhroma', subcategories: ['vulychni'], featured: false,
     description: 'Вулична бахрома зі 150 світлодіодами. Оберіть тепле або холодне біле основне світіння. Окремі світлодіоди мерехтять холодним білим.',
     specifications: [...icicleSpecifications, {label: 'Колір мерехтіння', value: 'Холодний білий'}],
@@ -418,24 +418,24 @@ export const assortment: readonly Product[] = [
     variants: [variant('GY-METEOR-30-3M', 'white', 'transparent', '3 м', usdToKopiykas(40), meteorPhoto, meteorOnTree)],
   },
   {
-    slug: 'promin-100', name: 'Гірлянда-нитка ' + strandSize,
+    slug: 'promin-100', name: 'Гірлянда нитка ' + strandSize,
     category: 'nytka', subcategories: ['vulychni'], featured: true,
     description: 'Вулична нитка зі 100 світлодіодами для дерев, перил і терас. Вісім варіантів сталого світіння, білий або чорний каучуковий провід.',
     specifications: [...strandSpecifications, {label: 'Режим світіння', value: 'Стале світіння'}],
     variants: strandVariants(false),
   },
   {
-    slug: 'promin-100-merekhtinnia', name: 'Гірлянда-нитка ' + strandSize + ' з мерехтінням',
+    slug: 'promin-100-merekhtinnia', name: 'Гірлянда нитка ' + strandSize + ' з мерехтінням',
     category: 'nytka', subcategories: ['vulychni'], featured: false,
     description: 'Вулична нитка зі 100 світлодіодами на білому або чорному каучуковому проводі. У білій версії основне світіння та яскравіші спалахи мають однаковий холодно-білий відтінок. У тепло-білій версії окремі діоди спалахують холодним білим.',
     specifications: [...strandSpecifications, {label: 'Колір мерехтіння', value: 'Холодний білий'}],
     variants: strandVariants(true),
   },
   {
-    slug: 'zavisa-456', name: 'Гірлянда-штора 2х1,5 м',
+    slug: 'zavisa-456', name: 'Гірлянда штора 2х1,5 м',
     category: 'shtora', subcategories: ['vulychni'], featured: true,
     cover: curtainWarm,
-    description: 'Вулична гірлянда-штора з 456 світлодіодами для фасадів, вітрин і терас. Вертикальні нитки однакової довжини утворюють рівний нижній край.',
+    description: 'Вулична гірлянда штора з 456 світлодіодами для фасадів, вітрин і терас. Вертикальні нитки однакової довжини утворюють рівний нижній край.',
     specifications: [
       {label: 'Застосування', value: 'Вуличне'},
       {label: 'Джерело світла', value: 'Світлодіоди (LED)'},
@@ -452,7 +452,7 @@ export const assortment: readonly Product[] = [
   curtainModel(912, '2 × 3 м', 24, 705_000, 'високих вітрин і входів'),
   curtainModel(288, '1,5 × 1 м', 18, 378_000, 'вікон і невеликих вітрин'),
   {
-    slug: 'sitka-2x1', name: 'Гірлянда-сітка 2 × 1 м',
+    slug: 'sitka-2x1', name: 'Гірлянда сітка 2 × 1 м',
     category: 'sitka', subcategories: [], featured: false,
     description: 'Світлова сітка розміром 2 × 1 м для рівномірного декоративного підсвічування.',
     variants: [variant('GY-NET-2X1', null, null, '2 × 1 м', 279_000, {
@@ -462,7 +462,7 @@ export const assortment: readonly Product[] = [
     })],
   },
   {
-    slug: 'sitka-288', name: 'Гірлянда-сітка 2 × 1,5 м',
+    slug: 'sitka-288', name: 'Гірлянда сітка 2 × 1,5 м',
     category: 'sitka', subcategories: ['vulychni'], featured: false,
     description: 'Вулична сітка з 288 світлодіодами для рівномірної підсвітки кущів, живоплотів і фасадів.',
     specifications: [
@@ -547,7 +547,7 @@ export const assortment: readonly Product[] = [
   {
     slug: 'kabel-zhyvlennia-3a', name: 'Кабель живлення 3 А',
     category: 'aksesuary', subcategories: ['zhyvlennia'], featured: false,
-    description: 'Кабель 1,5 м, IP65. Підходить до гірлянди-нитки 10 м зі сталим світінням і «Контура 114».',
+    description: 'Кабель 1,5 м, IP65. Підходить до гірлянди нитки 10 м зі сталим світінням і «Контура 114».',
     variants: [
       variant('GY-P3A-BK', null, 'black', '1,5 м', usdToKopiykas(10)),
       variant('GY-P3A-WH', null, 'white', '1,5 м', usdToKopiykas(10)),
