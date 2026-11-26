@@ -452,6 +452,16 @@ export const assortment: readonly Product[] = [
   curtainModel(912, '2 × 3 м', 24, 705_000, 'високих вітрин і входів'),
   curtainModel(288, '1,5 × 1 м', 18, 378_000, 'вікон і невеликих вітрин'),
   {
+    slug: 'sitka-2x1', name: 'Гірлянда-сітка 2 × 1 м',
+    category: 'sitka', subcategories: [], featured: false,
+    description: 'Світлова сітка розміром 2 × 1 м для рівномірного декоративного підсвічування.',
+    variants: [variant('GY-NET-2X1', null, null, '2 × 1 м', 279_000, {
+      ...net,
+      kind: 'illustration',
+      note: 'На ілюстрації показано сітку 2 × 1,5 м.',
+    })],
+  },
+  {
     slug: 'sitka-288', name: 'Гірлянда-сітка 2 × 1,5 м',
     category: 'sitka', subcategories: ['vulychni'], featured: false,
     description: 'Вулична сітка з 288 світлодіодами для рівномірної підсвітки кущів, живоплотів і фасадів.',
