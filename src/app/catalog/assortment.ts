@@ -80,6 +80,18 @@ const netGarden: ProductMedia = {
   note: 'Ілюстрація використання.',
 };
 const netDiagram = media('sitka-288-diagram', 'Схема сітки 2 × 1,5 м', 'application');
+const compactNetDiagram = media('sitka-2x1-diagram', 'Схема сітки 2 × 1 м', 'application');
+const netDescription = 'Вулична сітка з 288 світлодіодами для рівномірної підсвітки кущів, живоплотів і фасадів.';
+const netSpecifications = [
+  {label: 'Застосування', value: 'Вуличне'},
+  {label: 'Джерело світла', value: 'Світлодіоди (LED)'},
+  {label: 'Кількість світлодіодів', value: '288 LED'},
+  {label: 'Режим світіння', value: 'Стале світіння'},
+  {label: 'Напруга', value: '220 В'},
+  {label: 'З’єднання секцій', value: 'До 8 гірлянд'},
+  {label: 'Матеріал кабелю', value: 'Каучукова ізоляція, мідні жили'},
+  {label: 'Потужність', value: '24 Вт'},
+];
 const filamentGallery = [
   media('retro-s14', 'Ряд ламп S14 із теплим білим світінням на чорному проводі'),
   media('retro-s14-detail', 'Світлодіодна нитка всередині прозорої лампи S14 крупним планом'),
@@ -453,28 +465,14 @@ export const assortment: readonly Product[] = [
   curtainModel(288, '1,5 × 1 м', 18, 378_000, 'вікон і невеликих вітрин'),
   {
     slug: 'sitka-2x1', name: 'Гірлянда сітка 2 × 1 м',
-    category: 'sitka', subcategories: [], featured: false,
-    description: 'Світлова сітка розміром 2 × 1 м для рівномірного декоративного підсвічування.',
-    variants: [variant('GY-NET-2X1', null, null, '2 × 1 м', 279_000, {
-      ...net,
-      kind: 'illustration',
-      note: 'На ілюстрації показано сітку 2 × 1,5 м.',
-    })],
+    category: 'sitka', subcategories: ['vulychni'], featured: false,
+    description: netDescription, specifications: netSpecifications,
+    variants: [variant('GY-NET-2X1', 'white', 'black', '2 × 1 м', 279_000, net, netGarden, compactNetDiagram)],
   },
   {
     slug: 'sitka-288', name: 'Гірлянда сітка 2 × 1,5 м',
     category: 'sitka', subcategories: ['vulychni'], featured: false,
-    description: 'Вулична сітка з 288 світлодіодами для рівномірної підсвітки кущів, живоплотів і фасадів.',
-    specifications: [
-      {label: 'Застосування', value: 'Вуличне'},
-      {label: 'Джерело світла', value: 'Світлодіоди (LED)'},
-      {label: 'Кількість світлодіодів', value: '288 LED'},
-      {label: 'Режим світіння', value: 'Стале світіння'},
-      {label: 'Напруга', value: '220 В'},
-      {label: 'З’єднання секцій', value: 'До 8 гірлянд'},
-      {label: 'Матеріал кабелю', value: 'Каучукова ізоляція, мідні жили'},
-      {label: 'Потужність', value: '24 Вт'},
-    ],
+    description: netDescription, specifications: netSpecifications,
     variants: [variant('GY-NET288-WH', 'white', 'black', '2 × 1,5 м', 399_000, net, netGarden, netDiagram)],
   },
   {
