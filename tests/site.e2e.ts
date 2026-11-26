@@ -273,7 +273,7 @@ test('окрема заявка на монтаж додає підказки й
   await expect(description).toHaveValue(textWithColor);
   await treeIdea.click();
   await expect(description).toHaveValue(textWithColor);
-  await page.locator('input[type="file"]').setInputFiles(resolve('public/media/house-after.webp'));
+  await page.locator('input[type="file"]').setInputFiles(resolve('public/media/installation-after.webp'));
   await expect(page.getByRole('img', {name: 'Попередній перегляд фото об’єкта'})).toBeVisible();
   const submit = page.getByRole('button', {name: 'Надіслати заявку'});
   await page.route('**/api/installation', route => route.fulfill({status: 502}), {times: 1});
@@ -300,7 +300,7 @@ test('окрема заявка на монтаж додає підказки й
     body: new Uint8Array(request.postDataBuffer()!),
   }).formData();
   expect(String(data.get('description')).replaceAll('\r\n', '\n')).toBe(textWithColor);
-  expect(data.get('photo')).toMatchObject({name: 'house-after.webp', type: 'image/webp'});
+  expect(data.get('photo')).toMatchObject({name: 'installation-after.webp', type: 'image/webp'});
   await expect(page.getByRole('status')).toContainText('Заявку ABCDEF01 надіслано.');
   await expect(description).toHaveValue('');
 });

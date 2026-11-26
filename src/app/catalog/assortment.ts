@@ -311,6 +311,8 @@ function curtainModel(ledCount: number, size: string, drops: number, price: numb
   };
 }
 
+const snowflakeUse = {label: 'Призначення', value: 'Для приміщень і вулиці'};
+
 function snowflakeMotif(
   slug: string, sku: string, size: string, glow: 'blue' | 'cool', mode: 'static' | 'flicker', price: number,
   file = slug, shape = '',
@@ -326,11 +328,11 @@ function snowflakeMotif(
     slug, name, category: 'fihury', subcategories: ['snizhynky'], featured: false,
     cardSubtitle: color + ' · ' + modeLabel + (shape ? ' · ' + shape.toLowerCase() : ''),
     cover: photo,
-    description: 'Вулична світлодіодна сніжинка для фасадів і вітрин. Світиться ' + light + effect + '.' + outline,
+    description: 'Світлодіодна сніжинка для приміщень і вулиці, зокрема для оформлення фасадів і вітрин. Світиться ' + light + effect + '.' + outline,
     specifications: [
       {label: 'Тип гірлянди', value: 'Сніжинка'},
       {label: 'Режим роботи', value: modeLabel + ' (' + mode + ')'},
-      {label: 'Призначення', value: 'Зовнішнє використання'},
+      snowflakeUse,
       {label: 'Силовий кабель', value: 'Присутній'},
       {label: 'Напруга', value: '230 В'},
       {label: 'Клас захисту', value: 'IP44'},
@@ -478,9 +480,10 @@ export const assortment: readonly Product[] = [
     slug: 'snizhynka-30x30-blue', name: 'Мотив сніжинка 30 × 30 см',
     category: 'fihury', subcategories: ['snizhynky'], featured: false,
     cardSubtitle: 'Синє світіння',
-    description: 'Світлодіодна сніжинка із синім світінням і кільцем для підвішування. Через роз’єм можна послідовно з’єднувати сумісні сніжинки й подовжувати світлову композицію.',
+    description: 'Світлодіодна сніжинка із синім світінням для приміщень і вулиці. Є кільце для підвішування. Через роз’єм можна послідовно з’єднувати сумісні сніжинки й подовжувати світлову композицію.',
     specifications: [
       {label: 'Тип гірлянди', value: 'Сніжинка'},
+      snowflakeUse,
       {label: 'Кабель живлення', value: 'У комплекті'},
     ],
     variants: [variant('GY-SNOW30-BL', 'blue', 'black', '30 × 30 см', 75_000,

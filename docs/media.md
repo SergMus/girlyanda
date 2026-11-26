@@ -6,24 +6,18 @@
 
 | Файл в `public/media/products` | Источник |
 |---|---|
-| `sitka-288.webp` | [brightled.ua](https://brightled.ua/image/cache/data/products/net/net_white-1000x1000.jpg) |
 | `sitka-288-studio.webp` | Предметная иллюстрация белой сетки. Встроенная генерация изображений по снимку пользователя от 23.11.2026 (19.50.09) и лёгкое рассеивание света вокруг диодов в первом кадре. |
 | `sitka-288-garden.webp` | Встроенная генерация изображений по референсам пользователя от 23.11.2026 (19.50.09, 19.52.47, 19.53.37). Иллюстрация белого свечения сетки на кусте. |
 | `sitka-288-diagram.webp` | Перерисованная схема формы и габаритов по снимку пользователя от 23.11.2026 (19.51.08) и характеристикам модели. |
-| `zavisa-456-cool.webp` | [lumion.ua](https://lumion.ua/assets/images/products/41/medium/img-9172-.jpg) |
 | `sfera-20-warm.webp` | [lumion.ua](https://lumion.ua/assets/images/products/42/medium/img-9446-.jpg) |
 | `sfera-20-cool.webp` | [lumion.ua](https://lumion.ua/assets/images/products/42/medium/img-9457-.jpg) |
 | `snizhynka.webp` | [lumion.ua](https://lumion.ua/assets/images/products/52/medium/p1000120-.jpg) |
 | `retro-s14.webp`, `retro-s14-detail.webp`, `retro-s14-wide.webp`, `retro-s14-side.webp` | Снимки пользователя от 23.11.2026 (19.31.43, 19.31.32, 19.31.21, 19.31.52). Общие фото серии Belt light S14 для обеих длин. |
 | `retro-s14-terrace.webp` | Иллюстрация Belt light S14 на вечерней террасе. Встроенная генерация изображений по снимкам 19.31.32 и 19.31.43 с последующей доработкой обстановки. |
-| `spiral.webp` | [lumion.ua](https://lumion.ua/assets/images/products/51/medium/img-5330.jpg) |
 | `spiral-rgb.webp`, `spiral-rgb-green.webp`, `spiral-rgb-rainbow.webp` | Фото пользователя от 22.11.2026 (20.30.55, 20.31.02, 20.31.08). Три кадра свечения одной модели Magic Spiral 1,2 м. |
-| `spiral-neon-series.webp` | Снимок пользователя от 22.11.2026 (20.30.43). Фрагмент листа серии с неоновой спиралью, белой звездой и крупным планом световой ленты. |
 | `spiral-series-composite.webp` | Композиция ImageGen по трём снимкам пользователя от 23.11.2026 (00.10.42, 00.11.02, 00.11.06) и фото `spiral-rgb.webp`. Показать одну неоновую ёлку с белой звездой на вечерней террасе, ленту крупным планом, смартфон и пульт. Интерфейс на экране телефона иллюстративный. |
 | `kontur-90-warm.webp` | [lumion.ua](https://lumion.ua/assets/images/products/17/medium/img-9272-.jpg) |
 | `kontur-90-cool.webp` | [lumion.ua](https://lumion.ua/assets/images/products/17/medium/img-9299-.jpg) |
-| `promin-100-warm-led.webp` | [brightled.ua](https://brightled.ua/image/cache/data/products/string/static/brightled_garland_stringww_5-1000x1000.jpg) |
-| `promin-100-white-led.webp` | [brightled.ua](https://brightled.ua/image/cache/data/products/string/static/brightled_garland_string_white_1-1000x1000.jpg) |
 | `kontur-114-warm-led.webp` | [brightled.ua](https://brightled.ua/image/cache/data/products/icicle/brightled_garland_icicle_ww_3-1000x1000.jpg) |
 | `kontur-114-white-led.webp` | [brightled.ua](https://brightled.ua/image/cache/data/products/icicle/brightled_garland_icicle_white_2-1000x1000.jpg) |
 
@@ -111,21 +105,14 @@ Create one original photorealistic catalog installation photograph using the sup
 |---|---|
 | `hero*.webp`, `hero.webm` | Фотореалистичный европейский каменный дом с остроконечной крышей в сумерках, дом справа, тёплые огни вдоль карнизов и входа, тёмные деревья слева, осень, без людей и надписей. |
 | `house-day.webp`, `house-night.webp` | Один ракурс загородного дома. Днём фасад без праздничных огней, ночью карниз и вход подсвечены тёплыми гирляндами. |
-| `portfolio-mall-before.webp`, `portfolio-mall-after.webp` | Визуализация для сравнения на страницах «Наші роботи» и «Комерційні об’єкти». Дневной фасад торгового центра и вечерний вид со световыми завесами, контурными звёздами и бахромой над входом. |
-| `portfolio-mall-after-cool-outlines.webp` | Вечерний кадр для ползунка. Тепло-белые завесы с редким холодно-белым мерцанием, подвесные контуры колокольчика, полумесяца, звезды и снежинки. Слева компактная группа из трёх шаров разного размера, два холодно-белых и один тепло-белый. |
-| `portfolio-mall-after-gift.webp` | Вечерний кадр для портфолио. Световой подарок с красными лентами и бантом у кустов справа, три шара слева, плотная бахрома над входом и холодно-белые мотивы из дюралайта. |
-| `portfolio-mall-after-original-decor.webp` | Первый вечерний кадр с исходными завесами, бахромой и ёлочками. Четыре фигуры из холодно-белого дюралайта, зеркальные группы шаров в клумбах и светящийся подарок с красным бантом справа. |
-| `house-after.webp` | Ранний кадр проекта для карточки загородного дома в портфолио. |
-| `cafe.webp`, `terrace.webp`, `portfolio-cafe.webm`, `portfolio-terrace.webm` | Вечернее европейское кафе с подсвеченной витриной и садовая тераса с чёрной перголой и тёплыми ретрогирляндами. Две самостоятельные сцены, без логотипов и людей. |
+| `portfolio-mall-before.webp`, `portfolio-mall-after-original-decor.webp` | Дневной и вечерний фасад торгового центра для сравнения в портфолио. В вечернем кадре видны световые завесы, бахрома, контурные фигуры и светящийся подарок у входа. |
+| `cafe.webp`, `terrace.webp` | Вечернее европейское кафе с подсвеченной витриной и садовая тераса с чёрной перголой и тёплыми ретрогирляндами. Две самостоятельные сцены, без логотипов и людей. |
 | `about-terrace.webp`, `about-terrace-small.webp` | Широкий кадр для страницы «Про нас», созданный на основе `terrace.webp`. Тёплые светодиоды подсвечивают ствол дерева и лиственные кусты за каменной стеной. |
 | `about-decorator.webp`, `about-decorator-small.webp` | Декоратор крепит световую нить к хвойной гирлянде у витрины. Зимняя сцена для страницы «Про нас». |
 | `about-exterior.webp`, `about-interior.webp`, `about-care.webp` | Панорамные детали для страницы «Про нас». Холодная бахрома на кирпичном фасаде, тёплая световая завеса в интерьере и гирлянды на рабочем столе студии. |
-| `garden-tree.webp` | Наряженная тёплыми огнями уличная ель в частном саду. Обложка раздела «Простори, дерева й ялинки». |
 | `tree-path.webp` | Садовая дорожка среди деревьев с подсвеченными стволами. |
 | `color-alley.webp`, `color-alley-small.webp` | Исходная садовая аллея с листвой для блока монтажа на главной. На каждом из пяти деревьев гирлянда одного цвета. |
-| `hotel-entrance.webp` | Вход в небольшой отель с тёплыми огнями вдоль навеса. |
 | `contact-light-installation.webp`, `contact-light-installation-small.webp` | Объёмная световая фигура в форме воздушного шара на зимней улице. Оригинальный кадр для страницы «Заявка на монтаж» по мотивам пользовательского референса. |
-| `contact-studio.webp`, `contact-studio-small.webp` | Телефон с кадром празднично оформленного входа, эскиз и образец гирлянды для ранней версии страницы «Контакти». |
 | `contact-installation-banner.webp`, `contact-installation-banner-small.webp` | Трамвай с огнями, бантами и светящейся новогодней шапкой по фото пользователя на зимней улице. Композиция для баннера заявки на странице «Контакти». |
 | `installation-before.webp`, `installation-after.webp` | Пара для ползунка на странице «Монтаж». Один заснеженный кирпичный дом в одном ракурсе до и после установки тепло-белой бахромы. На вечернем кадре видны отблески на кирпиче и в окнах. |
 | `installation-luminous.webp`, `installation-luminous-small.webp` | Два мастера завершают монтаж холодно-белой бахромы на втором этаже. Светодиоды на елях у входа светят ярким холодным белым в тон карнизу. Ориентир для шага по скрытому проводу — около 10 см. |
