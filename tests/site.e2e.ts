@@ -151,6 +151,18 @@ test('ціни вирівняні під фото в каталозі та на 
   }
 });
 
+test('вибрана схема товару повністю з’являється у вікні', async ({page}) => {
+  await page.goto('/tovar/sitka-2x1');
+  const thumbnail = page.getByRole('button', {name: 'Схема сітки 2 × 1 м', exact: true});
+  await thumbnail.evaluate(button => button.scrollIntoView({block: 'center'}));
+  await thumbnail.click();
+
+  const image = page.locator('.detail-image img');
+  await expect(image).toHaveAttribute('src', '/media/products/sitka-2x1-diagram.webp');
+  await expect(image).toHaveJSProperty('naturalWidth', 1400);
+  await expect(image).toBeInViewport({ratio: 0.99});
+});
+
 test('фільтр, вибір артикула, медіа й надсилання замовлення', async ({page}) => {
   await page.goto('/katalog');
   await page.getByLabel('Колір світіння', {exact: true}).selectOption('white');

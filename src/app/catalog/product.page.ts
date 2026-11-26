@@ -1,10 +1,11 @@
-import { afterNextRender, Component, computed, effect, inject, input, linkedSignal, signal } from '@angular/core';
+import { afterNextRender, Component, computed, effect, ElementRef, inject, Injector, input, linkedSignal, signal, viewChild } from '@angular/core';
 import { Meta, Title } from '@angular/platform-browser';
 import { RouterLink } from '@angular/router';
 import { CartStore } from '../orders/cart.store';
 import { CatalogRepository } from './catalog.repository';
 import { categories } from './categories';
-import { availabilityLabels, glowOptions, priceLabel, selectVariant, Variant, wireOptions } from './products';
+import { availabilityLabels, glowOptions, priceLabel, selectVariant, wireOptions } from './products';
+import type { ProductMedia, Variant } from './products';
 
 @Component({
   imports: [RouterLink],
@@ -17,6 +18,8 @@ export class ProductPage {
   private readonly queryReady = signal(false);
   private readonly repo = inject(CatalogRepository);
   private readonly cart = inject(CartStore);
+  private readonly injector = inject(Injector);
+  private readonly detailImage = viewChild<ElementRef<HTMLDivElement>>('detailImage');
   readonly product = computed(() => this.repo.findProduct(this.slug()));
   readonly category = computed(() => categories.find(category => category.id === this.product()?.category));
   readonly variant = linkedSignal(() => {
@@ -56,6 +59,13 @@ export class ProductPage {
     if (!product || !current) return;
     this.variant.set(selectVariant(product, current, change));
     this.status.set('');
+  }
+
+  showPicture(photo: ProductMedia): void {
+    this.picture.set(photo);
+    afterNextRender({
+      write: () => this.detailImage()?.nativeElement.scrollIntoView({block: 'nearest'}),
+    }, {injector: this.injector});
   }
 
   add(variant: Variant): void {

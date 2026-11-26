@@ -8,7 +8,7 @@
       <div class="product-layout">
         <div class="gallery">
           @if (picture(); as photo) {
-            <div class="detail-image">
+            <div class="detail-image" #detailImage>
               <img [class.application-photo]="photo.kind === 'application'" [src]="photo.file" [alt]="photo.alt" width="627" height="627" fetchpriority="high">
               @if (photo.kind === 'reference') { <span class="photo-label">Зразок макрозйомки</span> }
               @if (photo.kind === 'series') { <span class="photo-label">Фото серії</span> }
@@ -22,7 +22,7 @@
           @if (selected.gallery.length > 1) {
             <div class="thumb-list" role="group" aria-label="Фотогалерея варіанта">
               @for (photo of selected.gallery; track photo.file) {
-                <button type="button" [attr.aria-pressed]="picture() === photo" (click)="picture.set(photo)" [attr.aria-label]="photo.alt">
+                <button type="button" [attr.aria-pressed]="picture() === photo" (click)="showPicture(photo)" [attr.aria-label]="photo.alt">
                   <img [class.application-photo]="photo.kind === 'application'" [src]="photo.file" width="68" height="68" alt="">
                 </button>
               }
